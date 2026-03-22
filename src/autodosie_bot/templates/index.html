@@ -6,30 +6,30 @@
 <section class="hero hero-home">
   <div class="hero-copy hero-panel">
     <p class="eyebrow">autodosie.ru</p>
-    <h1>Цифровое досье на автомобиль без шумного интерфейса.</h1>
+    <h1>Пойми автомобиль до звонка продавцу.</h1>
     <p class="hero-text">
-      Введи VIN или российский госномер и получи отчет в формате, который читается как приборная панель,
-      а не как случайная простыня из ссылок и заметок.
+      Введи VIN или российский госномер и получи единый отчет: найденные следы машины, базовую сводку,
+      полезные источники и понятный маршрут дальнейшей проверки.
     </p>
 
     <div class="hero-points">
       <span>VIN: {{ example_vin }}</span>
       <span>Госномер: {{ example_plate }}</span>
-      <span>API: /api/check?q=...</span>
+      <span>Один ввод, один отчет</span>
     </div>
 
     <div class="hero-stats">
       <article>
-        <span>Формат</span>
-        <strong>Web-first</strong>
+        <span>Запрос</span>
+        <strong>VIN или номер</strong>
       </article>
       <article>
-        <span>Режим</span>
-        <strong>РФ-источники</strong>
+        <span>Результат</span>
+        <strong>Сводка и секции</strong>
       </article>
       <article>
-        <span>Вывод</span>
-        <strong>Сводка + секции</strong>
+        <span>Фокус</span>
+        <strong>РФ-автомобили</strong>
       </article>
     </div>
   </div>
@@ -37,7 +37,7 @@
   <aside class="search-card dashboard-panel">
     <div class="panel-header">
       <span class="panel-kicker">Старт проверки</span>
-      <strong>Поиск по идентификатору</strong>
+      <strong>Найти историю авто</strong>
     </div>
 
     <form action="/report" method="get" class="search-form">
@@ -59,7 +59,7 @@
     <p class="form-message is-error">{{ error_message }}</p>
     {% else %}
     <p class="form-message">
-      Сайт уже умеет собирать бесплатный агрегированный отчет и готов к поэтапному усилению официальными проверками.
+      Отчет собирается вокруг реальных вопросов покупателя: что это за машина, где она светилась и что проверять дальше.
     </p>
     {% endif %}
 
@@ -74,41 +74,41 @@
 <section class="feature-grid">
   <article class="feature-card">
     <p class="card-index">01</p>
-    <h2>Один ввод</h2>
-    <p>Одна форма для VIN и номера. Без лишних сценариев, переходов и вторичных интерфейсов.</p>
+    <h2>Быстрый старт</h2>
+    <p>Одна форма для VIN и номера. Никаких лишних шагов перед первой проверкой.</p>
   </article>
   <article class="feature-card">
     <p class="card-index">02</p>
-    <h2>Отчет как панель</h2>
-    <p>Сверху короткая сводка, ниже секции по источникам. Структура рассчитана на быстрое чтение.</p>
+    <h2>Читаемый отчет</h2>
+    <p>Сверху короткая суть, ниже блоки с тем, что уже найдено и что стоит проверить вручную.</p>
   </article>
   <article class="feature-card">
     <p class="card-index">03</p>
-    <h2>Нормальный pipeline</h2>
-    <p>Сайт рассчитан на домен, nginx, systemd и будущий рост в полноценный сервис, а не временный лендинг.</p>
+    <h2>Фокус на рисках</h2>
+    <p>Сервис помогает не просто найти данные, а быстрее понять, где могут быть ограничения, залоги или пробелы в истории.</p>
   </article>
 </section>
 
 <section class="source-strip">
   <div class="source-strip-copy">
-    <p class="eyebrow">Контур данных</p>
-    <h2>Что собирает текущая версия</h2>
+    <p class="eyebrow">Что внутри</p>
+    <h2>Что можно увидеть в отчете</h2>
   </div>
   <div class="source-strip-grid">
     <article>
-      <span>VIN</span>
-      <strong>РФ-режим</strong>
-      <p>Бесплатный отчет с дальнейшими ручными маршрутами в официальные проверки.</p>
+      <span>Сводка</span>
+      <strong>Понятный итог</strong>
+      <p>Короткое объяснение, что найдено по машине прямо сейчас и насколько результат уже полезен.</p>
     </article>
     <article>
-      <span>Госномер</span>
-      <strong>Номерограм</strong>
-      <p>Публичные карточки, найденные фото и дополнительные следы автомобиля по номеру.</p>
+      <span>Следы</span>
+      <strong>Фото и карточки</strong>
+      <p>Если по номеру есть публичные следы, сервис покажет найденные фото и карточки автомобиля.</p>
     </article>
     <article>
-      <span>API</span>
-      <strong>JSON</strong>
-      <p>Тот же сценарий доступен через `/api/check`, чтобы дальше строить отдельный фронт или кабинет.</p>
+      <span>Маршрут</span>
+      <strong>Что делать дальше</strong>
+      <p>Если автоматического результата мало, отчет подскажет, какие официальные проверки стоит открыть следующими.</p>
     </article>
   </div>
 </section>

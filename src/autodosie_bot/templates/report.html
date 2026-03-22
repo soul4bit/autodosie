@@ -30,12 +30,14 @@
 
   <aside class="report-actions dashboard-panel">
     <div class="panel-header">
-      <span class="panel-kicker">Навигация</span>
-      <strong>Следующее действие</strong>
+      <span class="panel-kicker">Что дальше</span>
+      <strong>Следующий шаг проверки</strong>
     </div>
-    <a class="ghost-link" href="/">Новый запрос</a>
-    <a class="ghost-link ghost-link-secondary" href="/api/check?q={{ submitted_query }}">Открыть JSON</a>
-    <p class="side-note">Если результат кажется неполным, это обычно означает, что официальный источник требует отдельную ручную проверку или капчу.</p>
+    <a class="ghost-link" href="/">Проверить другой автомобиль</a>
+    <a class="ghost-link ghost-link-secondary" href="/sources">Посмотреть состав отчета</a>
+    <p class="side-note">
+      Если результат выглядит коротким, это обычно означает, что часть источников требует отдельной ручной проверки.
+    </p>
   </aside>
 </section>
 
@@ -79,7 +81,7 @@
   <ul>
     <li>VIN: 17 символов, только латиница и цифры.</li>
     <li>Госномер: формат A123BC77 или A123BC777.</li>
-    <li>Если ошибка пришла от источника, просто повтори запрос позже.</li>
+    <li>Если источник временно не ответил, просто повтори запрос позже.</li>
   </ul>
 </section>
 {% endif %}
