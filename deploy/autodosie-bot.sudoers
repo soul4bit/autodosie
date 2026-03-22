@@ -1,0 +1,2 @@
+autobot ALL=(root) NOPASSWD: /usr/bin/systemctl daemon-reload, /usr/bin/systemctl restart autodosie-bot.service, /usr/bin/systemctl status autodosie-bot.service
+

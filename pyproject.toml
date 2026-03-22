@@ -1,0 +1,29 @@
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "autodosie-bot"
+version = "0.1.0"
+description = "Telegram bot scaffold for vehicle checks"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "aiogram>=3.26,<4.0",
+    "httpx>=0.27,<0.29",
+    "python-dotenv>=1.0,<2.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "ruff>=0.11,<0.12",
+]
+
+[project.scripts]
+autodosie-bot = "autodosie_bot.__main__:main"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
