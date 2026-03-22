@@ -1,6 +1,9 @@
 from __future__ import annotations
 
+import asyncio
 import base64
+import logging
+import time
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from typing import Any, Literal
@@ -49,6 +52,7 @@ _CHECK_LABELS = {
     "diagnostic": "техосмотр",
     "aiusdtp": "ДТП",
 }
+logger = logging.getLogger(__name__)
 
 
 @dataclass(frozen=True, slots=True)
@@ -71,20 +75,60 @@ class GibddCaptchaError(VehicleCheckError):
 
 
 class GibddCheckService:
-    def __init__(self, timeout_seconds: float) -> None:
+    def __init__(
+        self,
+        timeout_seconds: float,
+        captcha_wait_seconds: float,
+        captcha_poll_interval_seconds: float,
+    ) -> None:
         self._timeout = timeout_seconds
+        self._captcha_wait_seconds = max(captcha_wait_seconds, 0.0)
+        self._captcha_poll_interval_seconds = max(captcha_poll_interval_seconds, 1.0)
+
+    @property
+    def captcha_wait_seconds(self) -> float:
+        return self._captcha_wait_seconds
 
     async def begin_vin_check(self, vin: str) -> GibddCaptchaChallenge:
-        try:
-            async with self._build_client() as client:
-                response = await client.get(_GIBDD_CAPTCHA_URL)
-                response.raise_for_status()
-        except httpx.TimeoutException as exc:
-            raise VehicleCheckError(
-                "Не удалось получить капчу ГИБДД вовремя. Возможно, серверу недоступен сервис проверки.",
-            ) from exc
-        except httpx.HTTPError as exc:
-            raise VehicleCheckError("Не удалось получить капчу ГИБДД.") from exc
+        last_error: Exception | None = None
+        deadline = time.monotonic() + self._captcha_wait_seconds
+        attempt = 0
+
+        while True:
+            attempt += 1
+            try:
+                async with self._build_client() as client:
+                    response = await client.get(_GIBDD_CAPTCHA_URL)
+                    response.raise_for_status()
+            except httpx.TimeoutException as exc:
+                last_error = exc
+                logger.warning("GIBDD captcha timeout on attempt %s", attempt)
+                if time.monotonic() < deadline:
+                    await asyncio.sleep(self._captcha_poll_interval_seconds)
+                    continue
+                raise VehicleCheckError(
+                    "ГИБДД не выдал капчу за отведенное время. Возможно, сервис недоступен или с этого VPS к нему плохой доступ.",
+                ) from exc
+            except httpx.HTTPStatusError as exc:
+                last_error = exc
+                status_code = exc.response.status_code
+                logger.warning("GIBDD captcha returned HTTP %s on attempt %s", status_code, attempt)
+                if status_code in {502, 503, 504} and time.monotonic() < deadline:
+                    await asyncio.sleep(self._captcha_poll_interval_seconds)
+                    continue
+                raise VehicleCheckError(self._describe_captcha_http_error(status_code)) from exc
+            except httpx.HTTPError as exc:
+                last_error = exc
+                logger.warning("GIBDD captcha request failed on attempt %s: %s", attempt, exc)
+                if time.monotonic() < deadline:
+                    await asyncio.sleep(self._captcha_poll_interval_seconds)
+                    continue
+                raise VehicleCheckError("Не удалось подключиться к сервису капчи ГИБДД.") from exc
+
+            break
+
+        if last_error is not None and response is None:
+            raise VehicleCheckError("Не удалось получить капчу ГИБДД.") from last_error
 
         try:
             payload = response.json()
@@ -244,6 +288,20 @@ class GibddCheckService:
             return _EndpointResult(kind="error", message=message)
 
         return _EndpointResult(kind="error", message=_GIBDD_FAIL_TEXT)
+
+    def _describe_captcha_http_error(self, status_code: int) -> str:
+        if status_code == 403:
+            return "ГИБДД отклоняет запрос к капче с этого сервера: HTTP 403. Вероятно, IP VPS блокируется."
+        if status_code == 429:
+            return "ГИБДД ограничил выдачу капчи: HTTP 429. Попробуй позже."
+        if status_code == 503:
+            return (
+                "ГИБДД сейчас отдает HTTP 503 при выдаче капчи. "
+                f"Бот ждал ее до {int(self._captcha_wait_seconds)} сек, но сервис так и не ответил нормально."
+            )
+        if status_code in {502, 504}:
+            return f"ГИБДД сейчас недоступен при выдаче капчи: HTTP {status_code}."
+        return f"ГИБДД не выдал капчу: HTTP {status_code}."
 
     def _build_report(
         self,

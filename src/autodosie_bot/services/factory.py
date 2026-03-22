@@ -20,4 +20,8 @@ def build_vehicle_check_service(config: AppConfig) -> VehicleCheckService:
 
 
 def build_gibdd_check_service(config: AppConfig) -> GibddCheckService:
-    return GibddCheckService(timeout_seconds=config.request_timeout_seconds)
+    return GibddCheckService(
+        timeout_seconds=config.request_timeout_seconds,
+        captcha_wait_seconds=config.gibdd_captcha_wait_seconds,
+        captcha_poll_interval_seconds=config.gibdd_captcha_poll_interval_seconds,
+    )

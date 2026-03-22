@@ -73,7 +73,9 @@ async def _start_gibdd_flow(
         return
 
     await message.answer(
-        f"Готовлю официальный запрос ГИБДД для <code>{escape(vin)}</code>. Получаю капчу.",
+        "Готовлю официальный запрос ГИБДД для "
+        f"<code>{escape(vin)}</code>. "
+        f"Если их сервис лагает, подожду капчу до {int(gibdd_check_service.captcha_wait_seconds)} сек.",
     )
 
     try:

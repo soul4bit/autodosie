@@ -17,6 +17,8 @@ class AppConfig:
     log_level: str
     vehicle_data_provider: str
     request_timeout_seconds: float
+    gibdd_captcha_wait_seconds: float
+    gibdd_captcha_poll_interval_seconds: float
 
 
 def _load_env_file() -> None:
@@ -51,4 +53,6 @@ def load_config() -> AppConfig:
         log_level=os.getenv("LOG_LEVEL", "INFO").strip().upper(),
         vehicle_data_provider=os.getenv("VEHICLE_DATA_PROVIDER", "nhtsa").strip().lower() or "nhtsa",
         request_timeout_seconds=_get_float("REQUEST_TIMEOUT_SECONDS", 20.0),
+        gibdd_captcha_wait_seconds=_get_float("GIBDD_CAPTCHA_WAIT_SECONDS", 45.0),
+        gibdd_captcha_poll_interval_seconds=_get_float("GIBDD_CAPTCHA_POLL_INTERVAL_SECONDS", 5.0),
     )
