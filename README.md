@@ -7,7 +7,7 @@
 - команды `/start`, `/help`, `/checkvin`;
 - валидация VIN и прием VIN прямо сообщением;
 - абстракция провайдера данных, чтобы потом подключить `gibdd`;
-- push-to-deploy на VPS через bare git repo + `systemd`.
+- push-to-deploy на VPS через bare git repo + `systemd`. 
 
 ## Локальный запуск
 
