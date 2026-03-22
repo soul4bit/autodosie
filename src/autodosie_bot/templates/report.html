@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+
+{% block title %}
+{% if report %}
+{{ site_name }} | {{ report.query_label }} {{ report.query_value }}
+{% else %}
+{{ site_name }} | Ошибка проверки
+{% endif %}
+{% endblock %}
+
+{% block content %}
+<section class="report-hero">
+  <div>
+    <p class="eyebrow">Отчет</p>
+    <h1>
+      {% if report %}
+      {{ report.query_label }} {{ report.query_value }}
+      {% else %}
+      Не удалось собрать отчет
+      {% endif %}
+    </h1>
+    <p class="hero-text">
+      {% if report %}
+      {{ report.summary }}
+      {% else %}
+      {{ error_message }}
+      {% endif %}
+    </p>
+  </div>
+  <a class="ghost-link" href="/">Новый запрос</a>
+</section>
+
+{% if report %}
+<section class="report-meta">
+  <article>
+    <span>Источник</span>
+    <strong>{{ report.provider }}</strong>
+  </article>
+  <article>
+    <span>Проверка</span>
+    <strong>{{ report.checked_at }}</strong>
+  </article>
+  <article>
+    <span>Формат</span>
+    <strong>{{ report.query_label }}</strong>
+  </article>
+</section>
+
+<section class="report-grid">
+  {% for section in report.sections %}
+  <article class="report-card">
+    <h2>{{ section.title }}</h2>
+    <ul>
+      {% for line in section.lines %}
+      <li>{{ line }}</li>
+      {% endfor %}
+    </ul>
+  </article>
+  {% endfor %}
+</section>
+{% else %}
+<section class="report-card report-card-single">
+  <h2>Что делать дальше</h2>
+  <ul>
+    <li>Проверь VIN: 17 символов, только латиница и цифры.</li>
+    <li>Проверь госномер: формат A123BC77 или A123BC777.</li>
+    <li>Если это ошибка источника, просто повтори запрос позже.</li>
+  </ul>
+</section>
+{% endif %}
+{% endblock %}

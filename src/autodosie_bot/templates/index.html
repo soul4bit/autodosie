@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+
+{% block title %}{{ site_name }} | Проверка автомобиля{% endblock %}
+
+{% block content %}
+<section class="hero">
+  <div class="hero-copy">
+    <p class="eyebrow">autodosie.ru</p>
+    <h1>Сайт вместо длинного чата.</h1>
+    <p class="hero-text">
+      Введи VIN или российский госномер и получи единый отчет. Сайт становится основной точкой входа,
+      а Telegram можно оставить только как дополнительный канал.
+    </p>
+    <div class="hero-points">
+      <span>VIN: {{ example_vin }}</span>
+      <span>Госномер: {{ example_plate }}</span>
+      <span>JSON API: /api/check?q=...</span>
+    </div>
+  </div>
+
+  <div class="search-card">
+    <form action="/report" method="get" class="search-form">
+      <label for="q">VIN или госномер</label>
+      <input
+        id="q"
+        name="q"
+        type="text"
+        value="{{ submitted_query }}"
+        placeholder="Например, XTA210740Y1234567 или A123BC77"
+        autocomplete="off"
+        spellcheck="false"
+        required
+      >
+      <button type="submit">Построить отчет</button>
+    </form>
+    {% if error_message %}
+    <p class="form-message is-error">{{ error_message }}</p>
+    {% else %}
+    <p class="form-message">Сейчас сайт использует существующий бесплатный service layer проекта и готов к дальнейшей интеграции с РФ-источниками.</p>
+    {% endif %}
+  </div>
+</section>
+
+<section class="feature-grid">
+  <article class="feature-card">
+    <h2>Один вход</h2>
+    <p>Одна форма для VIN и номера. Никаких команд и сценариев бота для базового кейса.</p>
+  </article>
+  <article class="feature-card">
+    <h2>Единый отчет</h2>
+    <p>Сводка, секции по источникам и API-ответ для будущего фронта или Telegram-обвязки.</p>
+  </article>
+  <article class="feature-card">
+    <h2>Пайплайн под домен</h2>
+    <p>Проект готов к systemd + nginx, чтобы сайт жил на autodosie.ru, а бот оставался фоновым сервисом.</p>
+  </article>
+</section>
+{% endblock %}

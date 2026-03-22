@@ -10,13 +10,9 @@ from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import State, StatesGroup
 from aiogram.types import Message
 
+from autodosie_bot.query import parse_vehicle_query
 from autodosie_bot.services.base import VehicleCheckError, VehicleCheckReport, VehicleCheckService
-from autodosie_bot.validation import (
-    is_valid_plate,
-    is_valid_vin,
-    normalize_plate,
-    normalize_vin,
-)
+from autodosie_bot.validation import is_valid_vin, normalize_vin
 
 router = Router(name="check_vin")
 logger = logging.getLogger(__name__)
@@ -114,16 +110,15 @@ async def process_vehicle_query(
     vehicle_check_service: VehicleCheckService,
     raw_value: str,
 ) -> None:
-    vin = normalize_vin(raw_value)
-    if is_valid_vin(vin):
+    query = parse_vehicle_query(raw_value)
+    if query is not None and query.kind == "vin":
         await state.clear()
-        await run_vin_check(message, vehicle_check_service, vin)
+        await run_vin_check(message, vehicle_check_service, query.value)
         return
 
-    plate = normalize_plate(raw_value)
-    if is_valid_plate(plate):
+    if query is not None and query.kind == "plate":
         await state.clear()
-        await run_plate_check(message, vehicle_check_service, plate)
+        await run_plate_check(message, vehicle_check_service, query.value)
         return
 
     await state.set_state(CheckVehicleStates.waiting_for_query)

@@ -1,20 +1,27 @@
 # autodosie_bot
 
-Каркас Telegram-бота для поэтапной проверки автомобиля по VIN и госномеру.
+`AutoDosie` now has two runtime surfaces in one repo:
 
-Сейчас в репозитории уже есть:
-- бот на `aiogram 3` c long polling;
-- команды `/start`, `/help`, `/check`, `/checkvin`;
-- валидация VIN и российского госномера;
-- прием VIN или госномера прямо сообщением;
-- бесплатный агрегированный отчет:
-  - `VIN` только в `РФ`-режиме с переходом на бесплатные российские проверки;
-  - `госномер` через публичную карточку `Номерограм`, если она найдена;
-  - ссылки на ручные бесплатные проверки `ГИБДД`, `НСИС`, `ФНП`;
-- абстракция провайдера данных, чтобы потом подключить `gibdd`;
-- деплой на VPS через GitHub Actions + `systemd`.
+- `autodosie-web`: main website for `autodosie.ru`
+- `autodosie-bot`: Telegram bot kept as an additional channel
 
-## Локальный запуск
+Both reuse the same Python service layer for VIN and Russian plate checks.
+
+## Current scope
+
+- `FastAPI` website with:
+  - landing page and search form
+  - report page for `VIN` or Russian plate
+  - JSON endpoint: `/api/check?q=...`
+  - health endpoint: `/health`
+- `aiogram 3` Telegram bot with:
+  - `/start`, `/help`, `/check`, `/checkvin`
+  - optional `/checkgibdd` flow
+- current default provider: `free`
+- deploy via GitHub Actions over SSH
+- production target: `systemd + nginx`
+
+## Local run
 
 ```bash
 python3 -m venv .venv
@@ -24,44 +31,59 @@ pip install --no-build-isolation -e .
 cp .env.example .env
 ```
 
-Заполни `BOT_TOKEN`, затем:
+Fill `.env`, then:
+
+```bash
+autodosie-web
+```
+
+Website defaults to `http://127.0.0.1:8000`.
+
+If you also want the bot locally:
 
 ```bash
 autodosie-bot
 ```
 
-## Деплой через GitHub Actions
+## Environment
 
-Схема такая:
-- ты пушишь в `main`;
-- GitHub Actions подключается по SSH к VPS;
-- код синхронизируется на сервер;
-- сервер обновляет venv и Python-пакеты;
-- `systemd` перезапускает бота.
+Minimal site-oriented config:
 
-### 1. Один раз подготовить SSH-ключ для GitHub Actions
-
-На локальной машине сгенерируй отдельный deploy key:
-
-```bash
-ssh-keygen -t ed25519 -f ~/.ssh/autodosie_github_actions -C "autodosie github actions"
+```env
+BOT_TOKEN=
+LOG_LEVEL=INFO
+VEHICLE_DATA_PROVIDER=free
+REQUEST_TIMEOUT_SECONDS=20
+GIBDD_CAPTCHA_WAIT_SECONDS=45
+GIBDD_CAPTCHA_POLL_INTERVAL_SECONDS=5
+SITE_NAME=AutoDosie
+SITE_URL=https://autodosie.ru
+WEB_HOST=127.0.0.1
+WEB_PORT=8000
 ```
 
-Понадобятся оба файла:
-- приватный ключ `~/.ssh/autodosie_github_actions`;
-- публичный ключ `~/.ssh/autodosie_github_actions.pub`.
+Notes:
 
-### 2. Один раз загрузить deploy-файлы на сервер
+- `BOT_TOKEN` is optional for the website.
+- `BOT_TOKEN` is required only if you also run `autodosie-bot`.
 
-С локальной машины:
+## Production layout
 
-```bash
-scp -r deploy root@SERVER_IP:/root/autodosie_deploy
-```
+Expected server paths:
 
-### 3. Один раз выполнить bootstrap на сервере
+- repo work tree: `/home/autobot/apps/autodosie_bot`
+- env file: `/home/autobot/apps/shared/autodosie_bot.env`
+- venv: `/home/autobot/.venvs/autodosie_bot`
 
-На сервере под `root`:
+System services installed by bootstrap:
+
+- `autodosie-web.service`
+- `autodosie-bot.service`
+- `nginx` with `autodosie.ru` virtual host
+
+## One-time server bootstrap
+
+Copy `deploy/` to the server and run as `root`:
 
 ```bash
 cd /root/autodosie_deploy
@@ -69,82 +91,74 @@ chmod +x bootstrap-server.sh
 ./bootstrap-server.sh
 ```
 
-Скрипт:
-- создаст рабочую директорию `/home/autobot/apps/autodosie_bot`;
-- создаст `/home/autobot/.ssh/authorized_keys`;
-- установит `systemd` unit;
-- добавит `sudoers` правило для перезапуска сервиса из deploy-скрипта;
-- создаст env-файл `/home/autobot/apps/shared/autodosie_bot.env`.
+Bootstrap will:
 
-### 4. Добавить публичный ключ на сервер
+- create app directories
+- install `rsync` and `nginx` if missing
+- install `systemd` units
+- install `nginx` config for `autodosie.ru`
+- create `/home/autobot/apps/shared/autodosie_bot.env`
+- enable `autodosie-web.service`, `autodosie-bot.service`, `nginx`
 
-На сервере под `root`:
+After bootstrap:
 
-```bash
-nano /home/autobot/.ssh/authorized_keys
-```
+1. Add the GitHub Actions public key to `/home/autobot/.ssh/authorized_keys`
+2. Edit `/home/autobot/apps/shared/autodosie_bot.env`
+3. Point `autodosie.ru` and `www.autodosie.ru` to the server IP
+4. Push to `main`
 
-Вставь содержимое файла `~/.ssh/autodosie_github_actions.pub`, затем проверь права:
+## GitHub Actions deploy
 
-```bash
-chown -R autobot:autobot /home/autobot/.ssh
-chmod 700 /home/autobot/.ssh
-chmod 600 /home/autobot/.ssh/authorized_keys
-```
+Workflow file: [`.github/workflows/deploy.yml`](./.github/workflows/deploy.yml)
 
-### 5. Заполнить env на сервере
+Required repository secrets:
 
-На сервере:
+- `DEPLOY_HOST`
+- `DEPLOY_USER`
+- `DEPLOY_SSH_KEY`
+- `DEPLOY_PORT` if SSH is not on `22`
 
-```bash
-nano /home/autobot/apps/shared/autodosie_bot.env
-```
+Each push to `main` does this:
 
-Минимум нужно заполнить:
+1. syncs the repo to `/home/autobot/apps/autodosie_bot/`
+2. updates the venv
+3. reinstalls the project in editable mode
+4. restarts `autodosie-web.service`
+5. restarts `autodosie-bot.service` only if `BOT_TOKEN` is set
+6. validates and reloads `nginx`
 
-```env
-BOT_TOKEN=...
-LOG_LEVEL=INFO
-VEHICLE_DATA_PROVIDER=free
-REQUEST_TIMEOUT_SECONDS=20
-```
+## Domain cutover
 
-### 6. Добавить GitHub secrets
-
-В GitHub repository -> `Settings` -> `Secrets and variables` -> `Actions` создай secrets:
-
-- `DEPLOY_HOST` = IP сервера
-- `DEPLOY_USER` = `autobot`
-- `DEPLOY_SSH_KEY` = содержимое файла `~/.ssh/autodosie_github_actions`
-
-Опционально:
-- `DEPLOY_PORT` = SSH port, если он не `22`
-
-### 7. Первый деплой
+Once DNS points to the server, verify:
 
 ```bash
-git add .
-git commit -m "Enable GitHub Actions deploy"
-git push origin main
+curl -I http://autodosie.ru
+systemctl status autodosie-web.service --no-pager
+systemctl status nginx --no-pager
+journalctl -u autodosie-web.service -n 100 --no-pager
 ```
 
-После пуша workflow из [.github/workflows/deploy.yml](.github/workflows/deploy.yml) сам:
-- зальет код на VPS через `rsync`;
-- выполнит серверный deploy-скрипт [deploy/remote-deploy.sh](deploy/remote-deploy.sh);
-- обновит зависимости;
-- перезапустит `autodosie-bot.service`.
-
-### 8. Проверка статуса на сервере
+Then add TLS, for example with `certbot`:
 
 ```bash
-systemctl status autodosie-bot.service --no-pager
-journalctl -u autodosie-bot.service -n 100 --no-pager
+sudo apt install -y certbot python3-certbot-nginx
+sudo certbot --nginx -d autodosie.ru -d www.autodosie.ru
 ```
 
-## Что делать дальше
+## Main routes
 
-Следующий этап после первого запуска:
-1. добавить SQLite;
-2. сохранять пользователей и историю запросов;
-3. улучшить объединение данных из бесплатных источников;
-4. отдельно доработать поток работы с капчей ГИБДД.
+- `/` - landing and search form
+- `/report?q=XTA210740Y1234567`
+- `/report?q=A123BC77`
+- `/api/check?q=XTA210740Y1234567`
+- `/health`
+
+## Next steps
+
+Reasonable next product steps after the cutover:
+
+1. move persistent storage to SQLite or PostgreSQL
+2. add caching for repeated VIN and plate lookups
+3. split the current free provider into source adapters
+4. move GIBDD-heavy traffic to a RU-based worker if needed
+5. let the Telegram bot send users to full site reports on `autodosie.ru`

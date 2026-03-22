@@ -21,7 +21,7 @@ def build_dispatcher() -> Dispatcher:
 
 
 async def run() -> None:
-    config = load_config()
+    config = load_config(require_bot_token=True)
     configure_logging(config.log_level)
 
     dispatcher = build_dispatcher()
