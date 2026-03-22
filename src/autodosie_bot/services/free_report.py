@@ -9,7 +9,6 @@ from urllib.parse import quote
 import httpx
 
 from autodosie_bot.services.base import ReportSection, VehicleCheckError, VehicleCheckReport
-from autodosie_bot.services.nhtsa import NhtsaVehicleCheckService
 from autodosie_bot.validation import normalize_plate
 
 _NOMEROGRAM_BASE_URL = "https://www.nomerogram.ru"
@@ -32,6 +31,12 @@ _PLATE_MANUAL_LINKS = (
     f"Номерограм: {_NOMEROGRAM_SEARCH_URL}",
     f"Проверка ОСАГО НСИС: {_NSIS_CHECK_URL}",
     "Для полного официального отчета по ограничениям и розыску потребуется VIN.",
+)
+_VIN_STATUS_LINES = (
+    "ГИБДД: официальный источник по регистрациям, розыску, ограничениям, ДТП и техосмотру, но проверка требует капчу.",
+    "НСИС: проверка ОСАГО по ТС есть, но публичная форма защищена антибот-проверкой.",
+    "ФНП: реестр залогов доступен бесплатно, но без простого публичного JSON API.",
+    "Американские VIN-источники отключены: сейчас бот ориентирован только на РФ.",
 )
 
 
@@ -142,12 +147,23 @@ class NomerogramLookupService:
 
 class FreeVehicleCheckService:
     def __init__(self, timeout_seconds: float) -> None:
-        self._nhtsa = NhtsaVehicleCheckService(timeout_seconds=timeout_seconds)
         self._nomerogram = NomerogramLookupService(timeout_seconds=timeout_seconds)
 
     async def check_vin(self, vin: str) -> VehicleCheckReport:
-        nhtsa_report = await self._nhtsa.check_vin(vin)
-        sections = list(nhtsa_report.sections)
+        sections = [
+            ReportSection(
+                title="РФ-режим проверки VIN",
+                lines=(
+                    "Сейчас бот использует только российскую логику проверки.",
+                    "Автоматическая расшифровка через американские VIN-источники отключена.",
+                    "Для официальных российских данных используй /checkgibdd или ссылки ниже.",
+                ),
+            ),
+            ReportSection(
+                title="Статус источников РФ",
+                lines=_VIN_STATUS_LINES,
+            ),
+        ]
         sections.append(
             ReportSection(
                 title="Бесплатные ручные проверки РФ",
@@ -156,9 +172,9 @@ class FreeVehicleCheckService:
         )
 
         summary = (
-            "Бесплатный отчет собран автоматически из доступных открытых источников. "
-            "Автоматически получены базовые данные по VIN; официальные российские проверки "
-            "доступны по ссылкам ниже и частично требуют капчу или антибот-проверку."
+            "Бот сейчас работает только в РФ-режиме. "
+            "Американские VIN-источники отключены, а официальные российские бесплатные проверки "
+            "по VIN частично закрыты капчей или антибот-защитой."
         )
 
         return VehicleCheckReport(
