@@ -28,5 +28,4 @@ fi
 
 sudo /usr/bin/systemctl daemon-reload
 sudo /usr/bin/systemctl restart "${SERVICE_NAME}"
-sudo /usr/bin/systemctl --no-pager --full status "${SERVICE_NAME}"
-
+sudo /usr/bin/systemctl status "${SERVICE_NAME}"
