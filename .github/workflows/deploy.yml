@@ -20,6 +20,7 @@ jobs:
       DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
       DEPLOY_PORT: ${{ secrets.DEPLOY_PORT != '' && secrets.DEPLOY_PORT || '22' }}
       DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+      SSH_OPTS: -o IdentitiesOnly=yes -o BatchMode=yes
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -48,12 +49,12 @@ jobs:
             --exclude '.venv/' \
             --exclude '__pycache__/' \
             --exclude '.env' \
-            -e "ssh -i ${HOME}/.ssh/deploy_key -p ${DEPLOY_PORT}" \
+            -e "ssh ${SSH_OPTS} -i ${HOME}/.ssh/deploy_key -p ${DEPLOY_PORT}" \
             ./ "${DEPLOY_USER}@${DEPLOY_HOST}:/home/${DEPLOY_USER}/apps/autodosie_bot/"
 
       - name: Run remote deploy
         run: |
           set -euo pipefail
-          ssh -i "${HOME}/.ssh/deploy_key" -p "${DEPLOY_PORT}" \
+          ssh ${SSH_OPTS} -i "${HOME}/.ssh/deploy_key" -p "${DEPLOY_PORT}" \
             "${DEPLOY_USER}@${DEPLOY_HOST}" \
             "bash /home/${DEPLOY_USER}/apps/autodosie_bot/deploy/remote-deploy.sh"
