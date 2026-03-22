@@ -481,6 +481,110 @@ h2 {
   margin-top: 1.25rem;
 }
 
+.sources-hero,
+.cta-panel {
+  margin-top: 0.2rem;
+}
+
+.source-page-grid,
+.methodology-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1.2rem;
+  margin-top: 1.4rem;
+}
+
+.source-page-card,
+.methodology-strip,
+.methodology-grid article {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  background: linear-gradient(180deg, rgba(18, 28, 39, 0.94) 0%, rgba(10, 16, 24, 0.94) 100%);
+  box-shadow: var(--shadow);
+  border-radius: var(--radius-xl);
+}
+
+.source-page-card,
+.methodology-strip,
+.methodology-grid article,
+.cta-panel {
+  padding: 1.7rem;
+}
+
+.source-page-card ul {
+  margin: 1rem 0 0;
+  padding-left: 1.15rem;
+  display: grid;
+  gap: 0.72rem;
+  color: var(--muted);
+  line-height: 1.68;
+}
+
+.methodology-strip {
+  margin-top: 1.4rem;
+}
+
+.methodology-copy {
+  display: flex;
+  justify-content: space-between;
+  align-items: end;
+  gap: 1rem;
+  margin-bottom: 1.1rem;
+}
+
+.methodology-copy h2 {
+  max-width: 12ch;
+}
+
+.methodology-grid article span {
+  color: var(--accent);
+  font-size: 0.76rem;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+}
+
+.methodology-grid article p {
+  margin: 0.9rem 0 0;
+  color: var(--muted);
+  line-height: 1.7;
+}
+
+.site-footer {
+  display: flex;
+  justify-content: space-between;
+  gap: 1.2rem;
+  margin-top: 1.6rem;
+  padding: 1.15rem 0 0.2rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+.site-footer strong {
+  font-family: var(--font-display);
+}
+
+.site-footer p {
+  margin: 0.35rem 0 0;
+  color: var(--muted);
+}
+
+.footer-links {
+  display: flex;
+  gap: 1rem;
+  align-items: start;
+  flex-wrap: wrap;
+}
+
+.footer-links a {
+  color: var(--muted);
+  text-decoration: none;
+}
+
+.footer-links a:hover {
+  color: var(--text);
+}
+
 @media (max-width: 980px) {
   .hero,
   .report-top,
@@ -488,7 +592,9 @@ h2 {
   .report-grid,
   .report-meta,
   .source-strip-grid,
-  .hero-stats {
+  .hero-stats,
+  .source-page-grid,
+  .methodology-grid {
     grid-template-columns: 1fr;
   }
 
@@ -498,6 +604,12 @@ h2 {
   }
 
   .source-strip-copy {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .methodology-copy,
+  .site-footer {
     flex-direction: column;
     align-items: flex-start;
   }

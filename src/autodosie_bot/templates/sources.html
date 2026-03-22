@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+
+{% block title %}{{ site_name }} | Источники и методология{% endblock %}
+
+{% block content %}
+<section class="sources-hero hero-panel">
+  <p class="eyebrow">Методология</p>
+  <h1>Как устроен отчет и откуда берутся данные.</h1>
+  <p class="hero-text">
+    AutoDosie не маскирует происхождение информации. Каждый блок в отчете должен быть понятен:
+    что найдено автоматически, что требует ручной проверки, а где источник вообще работает нестабильно.
+  </p>
+</section>
+
+<section class="source-page-grid">
+  <article class="source-page-card">
+    <p class="card-index">01</p>
+    <h2>Входные данные</h2>
+    <ul>
+      <li>VIN: строгая валидация 17 символов.</li>
+      <li>Госномер: российский формат типа A123BC77 или A123BC777.</li>
+      <li>Один и тот же маршрут доступен через web-интерфейс и JSON API.</li>
+    </ul>
+  </article>
+
+  <article class="source-page-card">
+    <p class="card-index">02</p>
+    <h2>Автоматические источники</h2>
+    <ul>
+      <li>Номерограм: публичные карточки номера, фотографии и следы автомобиля.</li>
+      <li>Free aggregate layer: единая сводка поверх открытых источников.</li>
+      <li>Результат собирается в секции, а не в хаотичный список строк.</li>
+    </ul>
+  </article>
+
+  <article class="source-page-card">
+    <p class="card-index">03</p>
+    <h2>Официальные проверки</h2>
+    <ul>
+      <li>ГИБДД, НСИС и ФНП остаются критически важными источниками для РФ.</li>
+      <li>Часть из них требует капчу, антибот-проверку или нестабильна по инфраструктуре.</li>
+      <li>Поэтому текущая версия честно разделяет автоматические и ручные этапы.</li>
+    </ul>
+  </article>
+</section>
+
+<section class="methodology-strip">
+  <div class="methodology-copy">
+    <p class="eyebrow">Архитектура</p>
+    <h2>Почему сайт устроен именно так</h2>
+  </div>
+  <div class="methodology-grid">
+    <article>
+      <span>Слой 1</span>
+      <strong>Нормализация запроса</strong>
+      <p>Сначала запрос приводится к валидному VIN или госномеру. Это убирает шум еще до обращений к источникам.</p>
+    </article>
+    <article>
+      <span>Слой 2</span>
+      <strong>Провайдеры данных</strong>
+      <p>Каждый источник живет за своим adapter-слоем, чтобы его можно было менять без перелома всего проекта.</p>
+    </article>
+    <article>
+      <span>Слой 3</span>
+      <strong>Формат отчета</strong>
+      <p>Отчет собирается как структурированный объект с summary и sections, поэтому одинаково подходит и для HTML, и для API.</p>
+    </article>
+  </div>
+</section>
+
+<section class="cta-panel dashboard-panel">
+  <div class="panel-header">
+    <span class="panel-kicker">Следующий шаг</span>
+    <strong>Проверить автомобиль</strong>
+  </div>
+  <p class="side-note">
+    Когда методология понятна, следующая точка одна: вводишь VIN или номер и смотришь реальный отчет.
+  </p>
+  <a class="ghost-link" href="/">Перейти к проверке</a>
+</section>
+{% endblock %}

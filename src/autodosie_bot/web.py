@@ -54,6 +54,20 @@ def build_app() -> FastAPI:
             ),
         )
 
+    @app.get("/sources", response_class=HTMLResponse)
+    async def sources_page(request: Request) -> HTMLResponse:
+        return templates.TemplateResponse(
+            request=request,
+            name="sources.html",
+            context=_base_context(
+                config=config,
+                active_page="sources",
+                request=request,
+                submitted_query="",
+                error_message="",
+            ),
+        )
+
     @app.get("/report", response_class=HTMLResponse)
     async def report_page(request: Request, q: str = "") -> HTMLResponse:
         query = parse_vehicle_query(q)
@@ -183,6 +197,7 @@ def _base_context(
         "site_name": config.site_name,
         "site_url": config.site_url,
         "submitted_query": submitted_query,
+        "support_email": "hello@autodosie.ru",
     }
 
 
