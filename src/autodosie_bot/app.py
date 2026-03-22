@@ -8,7 +8,7 @@ from aiogram.fsm.storage.memory import MemoryStorage
 from autodosie_bot.config import load_config
 from autodosie_bot.handlers import get_routers
 from autodosie_bot.logging_config import configure_logging
-from autodosie_bot.services.factory import build_vehicle_check_service
+from autodosie_bot.services.factory import build_gibdd_check_service, build_vehicle_check_service
 
 
 def build_dispatcher() -> Dispatcher:
@@ -26,6 +26,7 @@ async def run() -> None:
 
     dispatcher = build_dispatcher()
     vehicle_check_service = build_vehicle_check_service(config)
+    gibdd_check_service = build_gibdd_check_service(config)
 
     async with Bot(
         token=config.bot.token,
@@ -34,6 +35,6 @@ async def run() -> None:
         await dispatcher.start_polling(
             bot,
             config=config,
+            gibdd_check_service=gibdd_check_service,
             vehicle_check_service=vehicle_check_service,
         )
-

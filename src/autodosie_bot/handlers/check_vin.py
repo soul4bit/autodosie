@@ -5,7 +5,7 @@ from datetime import timezone
 from html import escape
 
 from aiogram import F, Router
-from aiogram.filters import Command, CommandObject
+from aiogram.filters import Command, CommandObject, StateFilter
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import State, StatesGroup
 from aiogram.types import Message
@@ -191,7 +191,7 @@ async def handle_non_text_vin(message: Message) -> None:
     await message.answer("Нужен текстовый VIN. Просто отправь его сообщением.")
 
 
-@router.message(F.text.regexp(r"^[A-Za-zАВЕКМНОРСТУХавекмнорстух0-9\-\s]{6,24}$"))
+@router.message(StateFilter(None), F.text.regexp(r"^[A-Za-zАВЕКМНОРСТУХавекмнорстух0-9\-\s]{6,24}$"))
 async def handle_direct_vehicle_query(
     message: Message,
     state: FSMContext,

@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from autodosie_bot.config import AppConfig
 from autodosie_bot.services.base import VehicleCheckService
+from autodosie_bot.services.gibdd import GibddCheckService
 from autodosie_bot.services.nhtsa import NhtsaVehicleCheckService
 from autodosie_bot.services.stub import StubVehicleCheckService
 
@@ -16,3 +17,7 @@ def build_vehicle_check_service(config: AppConfig) -> VehicleCheckService:
     raise RuntimeError(
         f"Unsupported VEHICLE_DATA_PROVIDER: {config.vehicle_data_provider}",
     )
+
+
+def build_gibdd_check_service(config: AppConfig) -> GibddCheckService:
+    return GibddCheckService(timeout_seconds=config.request_timeout_seconds)
