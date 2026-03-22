@@ -27,3 +27,7 @@ class VehicleCheckService(Protocol):
 
     async def check_plate(self, plate: str) -> VehicleCheckReport:
         """Return a report for the provided vehicle plate."""
+
+
+class VehicleCheckError(RuntimeError):
+    """Raised when a provider cannot complete a vehicle check."""

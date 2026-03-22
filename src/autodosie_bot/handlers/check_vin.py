@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import logging
 from datetime import timezone
 from html import escape
 
@@ -9,7 +10,7 @@ from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import State, StatesGroup
 from aiogram.types import Message
 
-from autodosie_bot.services.base import VehicleCheckReport, VehicleCheckService
+from autodosie_bot.services.base import VehicleCheckError, VehicleCheckReport, VehicleCheckService
 from autodosie_bot.validation import (
     is_valid_plate,
     is_valid_vin,
@@ -18,6 +19,7 @@ from autodosie_bot.validation import (
 )
 
 router = Router(name="check_vin")
+logger = logging.getLogger(__name__)
 
 
 class CheckVehicleStates(StatesGroup):
@@ -51,7 +53,16 @@ async def run_vin_check(
     vin: str,
 ) -> None:
     await message.answer(f"Принял VIN <code>{escape(vin)}</code>. Запрос выполняется.")
-    report = await vehicle_check_service.check_vin(vin)
+    try:
+        report = await vehicle_check_service.check_vin(vin)
+    except VehicleCheckError as exc:
+        await message.answer(f"Не удалось выполнить проверку VIN: {escape(str(exc))}")
+        return
+    except Exception:
+        logger.exception("Unexpected VIN check failure for %s", vin)
+        await message.answer("Проверка VIN завершилась внутренней ошибкой. Повтори запрос позже.")
+        return
+
     await message.answer(format_report(report))
 
 
@@ -64,7 +75,16 @@ async def run_plate_check(
         f"Принял госномер <code>{escape(plate)}</code>. "
         "Пока выполняю промежуточный сценарий до подключения реального источника.",
     )
-    report = await vehicle_check_service.check_plate(plate)
+    try:
+        report = await vehicle_check_service.check_plate(plate)
+    except VehicleCheckError as exc:
+        await message.answer(f"Не удалось выполнить проверку номера: {escape(str(exc))}")
+        return
+    except Exception:
+        logger.exception("Unexpected plate check failure for %s", plate)
+        await message.answer("Проверка номера завершилась внутренней ошибкой. Повтори запрос позже.")
+        return
+
     await message.answer(format_report(report))
 
 

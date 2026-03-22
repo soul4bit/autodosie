@@ -49,7 +49,6 @@ def load_config() -> AppConfig:
     return AppConfig(
         bot=BotConfig(token=token),
         log_level=os.getenv("LOG_LEVEL", "INFO").strip().upper(),
-        vehicle_data_provider=os.getenv("VEHICLE_DATA_PROVIDER", "stub").strip().lower() or "stub",
+        vehicle_data_provider=os.getenv("VEHICLE_DATA_PROVIDER", "nhtsa").strip().lower() or "nhtsa",
         request_timeout_seconds=_get_float("REQUEST_TIMEOUT_SECONDS", 20.0),
     )
-

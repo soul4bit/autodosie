@@ -7,8 +7,9 @@
 - команды `/start`, `/help`, `/check`, `/checkvin`;
 - валидация VIN и российского госномера;
 - прием VIN или госномера прямо сообщением;
+- базовая расшифровка VIN через `NHTSA vPIC`;
 - абстракция провайдера данных, чтобы потом подключить `gibdd`;
-- push-to-deploy на VPS через bare git repo + `systemd`. 
+- деплой на VPS через GitHub Actions + `systemd`.
 
 ## Локальный запуск
 
@@ -101,7 +102,7 @@ nano /home/autobot/apps/shared/autodosie_bot.env
 ```env
 BOT_TOKEN=...
 LOG_LEVEL=INFO
-VEHICLE_DATA_PROVIDER=stub
+VEHICLE_DATA_PROVIDER=nhtsa
 REQUEST_TIMEOUT_SECONDS=20
 ```
 
@@ -142,5 +143,5 @@ journalctl -u autodosie-bot.service -n 100 --no-pager
 Следующий этап после первого запуска:
 1. добавить SQLite;
 2. сохранять пользователей и историю запросов;
-3. подключить реальный provider вместо `stub`;
-4. отдельно спроектировать поток работы с капчей ГИБДД.
+3. отдельно спроектировать поток работы с капчей ГИБДД;
+4. добавить объединение данных из нескольких источников.
