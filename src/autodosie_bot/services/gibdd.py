@@ -20,6 +20,11 @@ _GIBDD_WANTED_URL = "https://check.gibdd.ru/proxy/check/auto/wanted"
 _GIBDD_RESTRICT_URL = "https://check.gibdd.ru/proxy/check/auto/restrict"
 _GIBDD_DIAGNOSTIC_URL = "https://check.gibdd.ru/proxy/check/auto/diagnostic"
 _GIBDD_DTP_URL = "https://check.gibdd.ru/proxy/check/auto/dtp"
+_GIBDD_USER_AGENT = (
+    "Mozilla/5.0 (X11; Linux x86_64) "
+    "AppleWebKit/537.36 (KHTML, like Gecko) "
+    "Chrome/135.0.0.0 Safari/537.36"
+)
 _CAPTCHA_ERROR_TEXT = "Капча введена неверно или устарела."
 _GIBDD_STOP_TEXT = "Сервис ГИБДД временно недоступен. Повтори проверку позже."
 _GIBDD_FAIL_TEXT = "Сервис ГИБДД вернул неожиданный ответ."
@@ -221,9 +226,12 @@ class GibddCheckService:
             follow_redirects=True,
             headers={
                 "Accept": "application/json, text/javascript, */*; q=0.01",
+                "Accept-Language": "ru-RU,ru;q=0.9,en-US;q=0.8,en;q=0.7",
+                "Cache-Control": "no-cache",
                 "Origin": _GIBDD_ORIGIN,
+                "Pragma": "no-cache",
                 "Referer": _GIBDD_REFERER,
-                "User-Agent": "autodosie-bot/0.1",
+                "User-Agent": _GIBDD_USER_AGENT,
                 "X-Requested-With": "XMLHttpRequest",
             },
         )
