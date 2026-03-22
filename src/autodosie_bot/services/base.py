@@ -13,7 +13,8 @@ class ReportSection:
 
 @dataclass(frozen=True, slots=True)
 class VehicleCheckReport:
-    vin: str
+    query_type: str
+    query_value: str
     provider: str
     checked_at: datetime
     summary: str
@@ -24,3 +25,5 @@ class VehicleCheckService(Protocol):
     async def check_vin(self, vin: str) -> VehicleCheckReport:
         """Return a report for the provided VIN."""
 
+    async def check_plate(self, plate: str) -> VehicleCheckReport:
+        """Return a report for the provided vehicle plate."""
