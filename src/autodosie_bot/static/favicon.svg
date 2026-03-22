@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="AutoDosie">
+  <defs>
+    <linearGradient id="bg" x1="8" y1="6" x2="56" y2="58" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#ffd18c"/>
+      <stop offset="0.58" stop-color="#f5a84d"/>
+      <stop offset="1" stop-color="#ff7a18"/>
+    </linearGradient>
+    <linearGradient id="sheen" x1="14" y1="12" x2="42" y2="36" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#ffffff" stop-opacity="0.42"/>
+      <stop offset="1" stop-color="#ffffff" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+  <rect x="6" y="6" width="52" height="52" rx="16" fill="#0a1016"/>
+  <rect x="8" y="8" width="48" height="48" rx="14" fill="url(#bg)"/>
+  <path d="M16 21c0-1.657 1.343-3 3-3h14c7.732 0 14 6.268 14 14s-6.268 14-14 14H19c-1.657 0-3-1.343-3-3V21zm9 5v12h7.5c3.59 0 6.5-2.91 6.5-6.5S36.09 25 32.5 25H25z" fill="#081018"/>
+  <path d="M18 11h28c3.314 0 6 2.686 6 6v5H12v-5c0-3.314 2.686-6 6-6z" fill="url(#sheen)" opacity="0.78"/>
+  <circle cx="23" cy="49" r="2.2" fill="#081018" opacity="0.45"/>
+  <circle cx="41" cy="49" r="2.2" fill="#081018" opacity="0.45"/>
+</svg>
