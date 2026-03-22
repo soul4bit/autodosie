@@ -7,13 +7,7 @@ from dotenv import load_dotenv
 
 
 @dataclass(frozen=True, slots=True)
-class BotConfig:
-    token: str
-
-
-@dataclass(frozen=True, slots=True)
 class AppConfig:
-    bot: BotConfig
     log_level: str
     vehicle_data_provider: str
     request_timeout_seconds: float
@@ -56,15 +50,10 @@ def _get_int(name: str, default: int) -> int:
         raise RuntimeError(f"{name} must be an integer") from exc
 
 
-def load_config(*, require_bot_token: bool = True) -> AppConfig:
+def load_config() -> AppConfig:
     _load_env_file()
 
-    token = os.getenv("BOT_TOKEN", "").strip()
-    if require_bot_token and not token:
-        raise RuntimeError("BOT_TOKEN is not set")
-
     return AppConfig(
-        bot=BotConfig(token=token),
         log_level=os.getenv("LOG_LEVEL", "INFO").strip().upper(),
         vehicle_data_provider=os.getenv("VEHICLE_DATA_PROVIDER", "free").strip().lower() or "free",
         request_timeout_seconds=_get_float("REQUEST_TIMEOUT_SECONDS", 20.0),

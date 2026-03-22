@@ -22,7 +22,6 @@ _TITLE_RE = re.compile(r"<title>([^<]+)</title>", re.IGNORECASE)
 _META_RE_TEMPLATE = r"<meta\s+{attr_name}=['\"]{attr_value}['\"]\s+content=['\"]([^'\"]+)['\"]"
 _PHOTO_RE = re.compile(r"https://s\.nomerogram\.ru/photo/[^\s\"'>]+")
 _VIN_MANUAL_LINKS = (
-    "ГИБДД: /checkgibdd {vin}",
     f"Официальная страница ГИБДД: {_GIBDD_CHECK_URL}",
     f"Проверка ОСАГО НСИС: {_NSIS_CHECK_URL}",
     f"Реестр залогов ФНП: {_FNP_SEARCH_URL}",
@@ -36,8 +35,9 @@ _VIN_STATUS_LINES = (
     "ГИБДД: официальный источник по регистрациям, розыску, ограничениям, ДТП и техосмотру, но проверка требует капчу.",
     "НСИС: проверка ОСАГО по ТС есть, но публичная форма защищена антибот-проверкой.",
     "ФНП: реестр залогов доступен бесплатно, но без простого публичного JSON API.",
-    "Американские VIN-источники отключены: сейчас бот ориентирован только на РФ.",
+    "Американские VIN-источники отключены: сервис ориентирован только на РФ.",
 )
+_USER_AGENT = "autodosie-web/0.1"
 
 
 @dataclass(frozen=True, slots=True)
@@ -63,7 +63,7 @@ class NomerogramLookupService:
             async with httpx.AsyncClient(timeout=self._timeout, follow_redirects=True) as client:
                 region_response = await client.get(
                     region_url,
-                    headers={"User-Agent": "autodosie-bot/0.1"},
+                    headers={"User-Agent": _USER_AGENT},
                 )
                 region_response.raise_for_status()
                 exact_page_url = self._extract_exact_page_url(region_response.text, slug)
@@ -72,7 +72,7 @@ class NomerogramLookupService:
 
                 detail_response = await client.get(
                     exact_page_url,
-                    headers={"User-Agent": "autodosie-bot/0.1"},
+                    headers={"User-Agent": _USER_AGENT},
                 )
                 detail_response.raise_for_status()
         except httpx.TimeoutException as exc:
@@ -154,25 +154,23 @@ class FreeVehicleCheckService:
             ReportSection(
                 title="РФ-режим проверки VIN",
                 lines=(
-                    "Сейчас бот использует только российскую логику проверки.",
+                    "Сейчас сервис использует только российскую логику проверки.",
                     "Автоматическая расшифровка через американские VIN-источники отключена.",
-                    "Для официальных российских данных используй /checkgibdd или ссылки ниже.",
+                    "Для официальных российских данных используй ручные проверки по ссылкам ниже.",
                 ),
             ),
             ReportSection(
                 title="Статус источников РФ",
                 lines=_VIN_STATUS_LINES,
             ),
-        ]
-        sections.append(
             ReportSection(
                 title="Бесплатные ручные проверки РФ",
-                lines=tuple(line.format(vin=vin) for line in _VIN_MANUAL_LINKS),
+                lines=_VIN_MANUAL_LINKS,
             ),
-        )
+        ]
 
         summary = (
-            "Бот сейчас работает только в РФ-режиме. "
+            "Сервис работает только в РФ-режиме. "
             "Американские VIN-источники отключены, а официальные российские бесплатные проверки "
             "по VIN частично закрыты капчей или антибот-защитой."
         )

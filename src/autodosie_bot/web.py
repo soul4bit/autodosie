@@ -23,7 +23,7 @@ _EXAMPLE_PLATE = "A123BC77"
 
 
 def build_app() -> FastAPI:
-    config = load_config(require_bot_token=False)
+    config = load_config()
     configure_logging(config.log_level)
     vehicle_check_service = build_vehicle_check_service(config)
 

@@ -1,11 +1,6 @@
 # autodosie_bot
 
-`AutoDosie` now has two runtime surfaces in one repo:
-
-- `autodosie-web`: main website for `autodosie.ru`
-- `autodosie-bot`: Telegram bot kept as an additional channel
-
-Both reuse the same Python service layer for VIN and Russian plate checks.
+`AutoDosie` is a web-only project for `autodosie.ru`.
 
 ## Current scope
 
@@ -14,9 +9,6 @@ Both reuse the same Python service layer for VIN and Russian plate checks.
   - report page for `VIN` or Russian plate
   - JSON endpoint: `/api/check?q=...`
   - health endpoint: `/health`
-- `aiogram 3` Telegram bot with:
-  - `/start`, `/help`, `/check`, `/checkvin`
-  - optional `/checkgibdd` flow
 - current default provider: `free`
 - deploy via GitHub Actions over SSH
 - production target: `systemd + nginx`
@@ -39,18 +31,11 @@ autodosie-web
 
 Website defaults to `http://127.0.0.1:8000`.
 
-If you also want the bot locally:
-
-```bash
-autodosie-bot
-```
-
 ## Environment
 
-Minimal site-oriented config:
+Minimal config:
 
 ```env
-BOT_TOKEN=
 LOG_LEVEL=INFO
 VEHICLE_DATA_PROVIDER=free
 REQUEST_TIMEOUT_SECONDS=20
@@ -61,11 +46,6 @@ SITE_URL=https://autodosie.ru
 WEB_HOST=127.0.0.1
 WEB_PORT=8000
 ```
-
-Notes:
-
-- `BOT_TOKEN` is optional for the website.
-- `BOT_TOKEN` is required only if you also run `autodosie-bot`.
 
 ## Production layout
 
@@ -78,7 +58,6 @@ Expected server paths:
 System services installed by bootstrap:
 
 - `autodosie-web.service`
-- `autodosie-bot.service`
 - `nginx` with `autodosie.ru` virtual host
 
 ## One-time server bootstrap
@@ -95,10 +74,11 @@ Bootstrap will:
 
 - create app directories
 - install `rsync` and `nginx` if missing
-- install `systemd` units
+- install the web `systemd` unit
 - install `nginx` config for `autodosie.ru`
 - create `/home/autobot/apps/shared/autodosie_bot.env`
-- enable `autodosie-web.service`, `autodosie-bot.service`, `nginx`
+- remove the legacy Telegram bot service if it exists
+- enable `autodosie-web.service`, `nginx`
 
 After bootstrap:
 
@@ -124,8 +104,7 @@ Each push to `main` does this:
 2. updates the venv
 3. reinstalls the project in editable mode
 4. restarts `autodosie-web.service`
-5. restarts `autodosie-bot.service` only if `BOT_TOKEN` is set
-6. validates and reloads `nginx`
+5. validates and reloads `nginx`
 
 ## Domain cutover
 
@@ -138,7 +117,7 @@ systemctl status nginx --no-pager
 journalctl -u autodosie-web.service -n 100 --no-pager
 ```
 
-Then add TLS, for example with `certbot`:
+Then add TLS:
 
 ```bash
 sudo apt install -y certbot python3-certbot-nginx
@@ -161,4 +140,3 @@ Reasonable next product steps after the cutover:
 2. add caching for repeated VIN and plate lookups
 3. split the current free provider into source adapters
 4. move GIBDD-heavy traffic to a RU-based worker if needed
-5. let the Telegram bot send users to full site reports on `autodosie.ru`

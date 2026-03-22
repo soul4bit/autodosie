@@ -54,7 +54,7 @@ class NhtsaVehicleCheckService:
             async with httpx.AsyncClient(timeout=self._timeout, follow_redirects=True) as client:
                 response = await client.get(
                     url,
-                    headers={"User-Agent": "autodosie-bot/0.1"},
+                    headers={"User-Agent": "autodosie-web/0.1"},
                 )
                 response.raise_for_status()
         except httpx.TimeoutException as exc:

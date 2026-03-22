@@ -1,2 +1,1 @@
-"""Autodosie bot package."""
-
+"""Autodosie web package."""

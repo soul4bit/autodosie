@@ -6,7 +6,7 @@ from autodosie_bot.config import load_config
 
 
 def main() -> None:
-    config = load_config(require_bot_token=False)
+    config = load_config()
     uvicorn.run(
         "autodosie_bot.web:app",
         host=config.web_host,

@@ -7,7 +7,6 @@ APP_ROOT="/home/${APP_USER}"
 WORK_TREE="${APP_ROOT}/apps/${APP_NAME}"
 VENV_DIR="${APP_ROOT}/.venvs/${APP_NAME}"
 ENV_FILE="${APP_ROOT}/apps/shared/${APP_NAME}.env"
-SERVICE_NAME="autodosie-bot.service"
 WEB_SERVICE_NAME="autodosie-web.service"
 
 if [[ ! -d "${WORK_TREE}" ]]; then
@@ -20,10 +19,6 @@ if [[ ! -f "${ENV_FILE}" ]]; then
     exit 1
 fi
 
-set -a
-source "${ENV_FILE}"
-set +a
-
 if [[ ! -d "${VENV_DIR}" ]]; then
     python3 -m venv "${VENV_DIR}"
 fi
@@ -33,15 +28,9 @@ fi
 
 sudo /usr/bin/systemctl daemon-reload
 sudo /usr/bin/systemctl restart "${WEB_SERVICE_NAME}"
-if [[ -n "${BOT_TOKEN:-}" ]]; then
-    sudo /usr/bin/systemctl restart "${SERVICE_NAME}"
-fi
 if command -v /usr/sbin/nginx >/dev/null 2>&1; then
     sudo /usr/sbin/nginx -t
     sudo /usr/bin/systemctl reload nginx
     sudo /usr/bin/systemctl status nginx
 fi
 sudo /usr/bin/systemctl status "${WEB_SERVICE_NAME}"
-if [[ -n "${BOT_TOKEN:-}" ]]; then
-    sudo /usr/bin/systemctl status "${SERVICE_NAME}"
-fi

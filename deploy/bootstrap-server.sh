@@ -44,15 +44,14 @@ if [[ ! -f "${AUTHORIZED_KEYS_FILE}" ]]; then
     chmod 0600 "${AUTHORIZED_KEYS_FILE}"
 fi
 
-install -m 0644 "${SCRIPT_DIR}/autodosie-bot.service" /etc/systemd/system/autodosie-bot.service
 install -m 0644 "${SCRIPT_DIR}/autodosie-web.service" /etc/systemd/system/autodosie-web.service
-install -m 0440 "${SCRIPT_DIR}/autodosie-bot.sudoers" /etc/sudoers.d/autodosie-bot
+install -m 0440 "${SCRIPT_DIR}/autodosie-web.sudoers" /etc/sudoers.d/autodosie-web
+rm -f /etc/sudoers.d/autodosie-bot
 install -m 0644 "${SCRIPT_DIR}/autodosie.ru.nginx.conf" "${NGINX_SITE_AVAILABLE}"
 ln -sfn "${NGINX_SITE_AVAILABLE}" "${NGINX_SITE_ENABLED}"
 
 if [[ ! -f "${ENV_FILE}" ]]; then
     cat > "${ENV_FILE}" <<'EOF'
-BOT_TOKEN=
 LOG_LEVEL=INFO
 VEHICLE_DATA_PROVIDER=free
 REQUEST_TIMEOUT_SECONDS=20
@@ -67,8 +66,13 @@ EOF
     chmod 0640 "${ENV_FILE}"
 fi
 
+if systemctl list-unit-files autodosie-bot.service >/dev/null 2>&1; then
+    systemctl disable --now autodosie-bot.service || true
+fi
+rm -f /etc/systemd/system/autodosie-bot.service
+rm -f /etc/systemd/system/multi-user.target.wants/autodosie-bot.service
+
 systemctl daemon-reload
-systemctl enable autodosie-bot.service
 systemctl enable autodosie-web.service
 nginx -t
 systemctl enable nginx
