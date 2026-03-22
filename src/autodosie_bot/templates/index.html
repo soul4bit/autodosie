@@ -3,22 +3,43 @@
 {% block title %}{{ site_name }} | Проверка автомобиля{% endblock %}
 
 {% block content %}
-<section class="hero">
-  <div class="hero-copy">
+<section class="hero hero-home">
+  <div class="hero-copy hero-panel">
     <p class="eyebrow">autodosie.ru</p>
-    <h1>Проверка авто на одном сайте.</h1>
+    <h1>Цифровое досье на автомобиль без шумного интерфейса.</h1>
     <p class="hero-text">
-      Введи VIN или российский госномер и получи единый отчет. Проект работает как отдельный сайт с API
-      и готов к дальнейшему усилению российскими источниками.
+      Введи VIN или российский госномер и получи отчет в формате, который читается как приборная панель,
+      а не как случайная простыня из ссылок и заметок.
     </p>
+
     <div class="hero-points">
       <span>VIN: {{ example_vin }}</span>
       <span>Госномер: {{ example_plate }}</span>
-      <span>JSON API: /api/check?q=...</span>
+      <span>API: /api/check?q=...</span>
+    </div>
+
+    <div class="hero-stats">
+      <article>
+        <span>Формат</span>
+        <strong>Web-first</strong>
+      </article>
+      <article>
+        <span>Режим</span>
+        <strong>РФ-источники</strong>
+      </article>
+      <article>
+        <span>Вывод</span>
+        <strong>Сводка + секции</strong>
+      </article>
     </div>
   </div>
 
-  <div class="search-card">
+  <aside class="search-card dashboard-panel">
+    <div class="panel-header">
+      <span class="panel-kicker">Старт проверки</span>
+      <strong>Поиск по идентификатору</strong>
+    </div>
+
     <form action="/report" method="get" class="search-form">
       <label for="q">VIN или госномер</label>
       <input
@@ -31,28 +52,64 @@
         spellcheck="false"
         required
       >
-      <button type="submit">Построить отчет</button>
+      <button type="submit">Собрать отчет</button>
     </form>
+
     {% if error_message %}
     <p class="form-message is-error">{{ error_message }}</p>
     {% else %}
-    <p class="form-message">Сейчас сайт использует существующий бесплатный service layer проекта и готов к дальнейшей интеграции с РФ-источниками.</p>
+    <p class="form-message">
+      Сайт уже умеет собирать бесплатный агрегированный отчет и готов к поэтапному усилению официальными проверками.
+    </p>
     {% endif %}
-  </div>
+
+    <div class="scan-lines" aria-hidden="true">
+      <span></span>
+      <span></span>
+      <span></span>
+    </div>
+  </aside>
 </section>
 
 <section class="feature-grid">
   <article class="feature-card">
-    <h2>Один вход</h2>
-    <p>Одна форма для VIN и номера. Базовый сценарий полностью переехал в web-интерфейс.</p>
+    <p class="card-index">01</p>
+    <h2>Один ввод</h2>
+    <p>Одна форма для VIN и номера. Без лишних сценариев, переходов и вторичных интерфейсов.</p>
   </article>
   <article class="feature-card">
-    <h2>Единый отчет</h2>
-    <p>Сводка, секции по источникам и JSON API для следующего этапа фронта и интеграций.</p>
+    <p class="card-index">02</p>
+    <h2>Отчет как панель</h2>
+    <p>Сверху короткая сводка, ниже секции по источникам. Структура рассчитана на быстрое чтение.</p>
   </article>
   <article class="feature-card">
-    <h2>Пайплайн под домен</h2>
-    <p>Проект готов к systemd + nginx, чтобы сайт жил на autodosie.ru как единственное приложение.</p>
+    <p class="card-index">03</p>
+    <h2>Нормальный pipeline</h2>
+    <p>Сайт рассчитан на домен, nginx, systemd и будущий рост в полноценный сервис, а не временный лендинг.</p>
   </article>
+</section>
+
+<section class="source-strip">
+  <div class="source-strip-copy">
+    <p class="eyebrow">Контур данных</p>
+    <h2>Что собирает текущая версия</h2>
+  </div>
+  <div class="source-strip-grid">
+    <article>
+      <span>VIN</span>
+      <strong>РФ-режим</strong>
+      <p>Бесплатный отчет с дальнейшими ручными маршрутами в официальные проверки.</p>
+    </article>
+    <article>
+      <span>Госномер</span>
+      <strong>Номерограм</strong>
+      <p>Публичные карточки, найденные фото и дополнительные следы автомобиля по номеру.</p>
+    </article>
+    <article>
+      <span>API</span>
+      <strong>JSON</strong>
+      <p>Тот же сценарий доступен через `/api/check`, чтобы дальше строить отдельный фронт или кабинет.</p>
+    </article>
+  </div>
 </section>
 {% endblock %}

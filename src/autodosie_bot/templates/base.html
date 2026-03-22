@@ -5,18 +5,28 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{% block title %}{{ site_name }}{% endblock %}</title>
     <meta name="description" content="Проверка автомобиля по VIN и госномеру с единым отчетом из доступных открытых источников.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@500;600;700;800&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ request.url_for('static', path='/site.css') }}">
   </head>
   <body>
+    <div class="page-backdrop" aria-hidden="true">
+      <div class="grid-glow grid-glow-left"></div>
+      <div class="grid-glow grid-glow-right"></div>
+      <div class="noise-panel"></div>
+    </div>
+
     <div class="page-shell">
       <header class="site-header">
         <a class="brand" href="/">
           <span class="brand-mark">AD</span>
           <span class="brand-copy">
             <strong>{{ site_name }}</strong>
-            <span>VIN и госномер в одном отчете</span>
+            <span>VIN, госномер, единый отчет</span>
           </span>
         </a>
+
         <nav class="site-nav">
           <a href="/" class="{% if active_page == 'home' %}is-active{% endif %}">Проверка</a>
           <a href="/api/docs">API</a>

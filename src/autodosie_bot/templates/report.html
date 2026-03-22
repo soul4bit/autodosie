@@ -9,8 +9,8 @@
 {% endblock %}
 
 {% block content %}
-<section class="report-hero">
-  <div>
+<section class="report-top">
+  <div class="report-head hero-panel">
     <p class="eyebrow">Отчет</p>
     <h1>
       {% if report %}
@@ -27,7 +27,16 @@
       {% endif %}
     </p>
   </div>
-  <a class="ghost-link" href="/">Новый запрос</a>
+
+  <aside class="report-actions dashboard-panel">
+    <div class="panel-header">
+      <span class="panel-kicker">Навигация</span>
+      <strong>Следующее действие</strong>
+    </div>
+    <a class="ghost-link" href="/">Новый запрос</a>
+    <a class="ghost-link ghost-link-secondary" href="/api/check?q={{ submitted_query }}">Открыть JSON</a>
+    <p class="side-note">Если результат кажется неполным, это обычно означает, что официальный источник требует отдельную ручную проверку или капчу.</p>
+  </aside>
 </section>
 
 {% if report %}
@@ -49,7 +58,10 @@
 <section class="report-grid">
   {% for section in report.sections %}
   <article class="report-card">
-    <h2>{{ section.title }}</h2>
+    <div class="report-card-head">
+      <p class="card-index">{{ "%02d"|format(loop.index) }}</p>
+      <h2>{{ section.title }}</h2>
+    </div>
     <ul>
       {% for line in section.lines %}
       <li>{{ line }}</li>
@@ -60,11 +72,14 @@
 </section>
 {% else %}
 <section class="report-card report-card-single">
-  <h2>Что делать дальше</h2>
+  <div class="report-card-head">
+    <p class="card-index">00</p>
+    <h2>Что проверить</h2>
+  </div>
   <ul>
-    <li>Проверь VIN: 17 символов, только латиница и цифры.</li>
-    <li>Проверь госномер: формат A123BC77 или A123BC777.</li>
-    <li>Если это ошибка источника, просто повтори запрос позже.</li>
+    <li>VIN: 17 символов, только латиница и цифры.</li>
+    <li>Госномер: формат A123BC77 или A123BC777.</li>
+    <li>Если ошибка пришла от источника, просто повтори запрос позже.</li>
   </ul>
 </section>
 {% endif %}
