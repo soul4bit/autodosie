@@ -52,7 +52,7 @@ async def run_vin_check(
     vehicle_check_service: VehicleCheckService,
     vin: str,
 ) -> None:
-    await message.answer(f"Принял VIN <code>{escape(vin)}</code>. Запрос выполняется.")
+    await message.answer(f"Принял VIN <code>{escape(vin)}</code>. Собираю бесплатный отчет.")
     try:
         report = await vehicle_check_service.check_vin(vin)
     except VehicleCheckError as exc:
@@ -73,7 +73,7 @@ async def run_plate_check(
 ) -> None:
     await message.answer(
         f"Принял госномер <code>{escape(plate)}</code>. "
-        "Пока выполняю промежуточный сценарий до подключения реального источника.",
+        "Собираю бесплатный отчет по доступным открытым источникам.",
     )
     try:
         report = await vehicle_check_service.check_plate(plate)

@@ -51,7 +51,7 @@ def load_config() -> AppConfig:
     return AppConfig(
         bot=BotConfig(token=token),
         log_level=os.getenv("LOG_LEVEL", "INFO").strip().upper(),
-        vehicle_data_provider=os.getenv("VEHICLE_DATA_PROVIDER", "nhtsa").strip().lower() or "nhtsa",
+        vehicle_data_provider=os.getenv("VEHICLE_DATA_PROVIDER", "free").strip().lower() or "free",
         request_timeout_seconds=_get_float("REQUEST_TIMEOUT_SECONDS", 20.0),
         gibdd_captcha_wait_seconds=_get_float("GIBDD_CAPTCHA_WAIT_SECONDS", 45.0),
         gibdd_captcha_poll_interval_seconds=_get_float("GIBDD_CAPTCHA_POLL_INTERVAL_SECONDS", 5.0),
