@@ -1,19 +1,37 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="AutoDosie">
   <defs>
     <linearGradient id="bg" x1="8" y1="6" x2="56" y2="58" gradientUnits="userSpaceOnUse">
-      <stop offset="0" stop-color="#ffd18c"/>
-      <stop offset="0.58" stop-color="#f5a84d"/>
-      <stop offset="1" stop-color="#ff7a18"/>
+      <stop offset="0" stop-color="#0d1628"/>
+      <stop offset="0.6" stop-color="#08111d"/>
+      <stop offset="1" stop-color="#040914"/>
     </linearGradient>
-    <linearGradient id="sheen" x1="14" y1="12" x2="42" y2="36" gradientUnits="userSpaceOnUse">
-      <stop offset="0" stop-color="#ffffff" stop-opacity="0.42"/>
-      <stop offset="1" stop-color="#ffffff" stop-opacity="0"/>
+    <linearGradient id="rim" x1="10" y1="10" x2="54" y2="54" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#22d3ee"/>
+      <stop offset="0.55" stop-color="#2563eb"/>
+      <stop offset="1" stop-color="#f97316"/>
+    </linearGradient>
+    <linearGradient id="car" x1="18" y1="22" x2="46" y2="48" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#8be9ff"/>
+      <stop offset="0.62" stop-color="#38bdf8"/>
+      <stop offset="1" stop-color="#2563eb"/>
     </linearGradient>
   </defs>
-  <rect x="6" y="6" width="52" height="52" rx="16" fill="#0a1016"/>
-  <rect x="8" y="8" width="48" height="48" rx="14" fill="url(#bg)"/>
-  <path d="M16 21c0-1.657 1.343-3 3-3h14c7.732 0 14 6.268 14 14s-6.268 14-14 14H19c-1.657 0-3-1.343-3-3V21zm9 5v12h7.5c3.59 0 6.5-2.91 6.5-6.5S36.09 25 32.5 25H25z" fill="#081018"/>
-  <path d="M18 11h28c3.314 0 6 2.686 6 6v5H12v-5c0-3.314 2.686-6 6-6z" fill="url(#sheen)" opacity="0.78"/>
-  <circle cx="23" cy="49" r="2.2" fill="#081018" opacity="0.45"/>
-  <circle cx="41" cy="49" r="2.2" fill="#081018" opacity="0.45"/>
+
+  <rect x="5" y="5" width="54" height="54" rx="18" fill="#020611"/>
+  <rect x="7.5" y="7.5" width="49" height="49" rx="16" fill="url(#bg)" stroke="url(#rim)" stroke-width="1.5"/>
+
+  <circle cx="17" cy="15" r="10" fill="#22d3ee" opacity="0.14"/>
+  <circle cx="49" cy="49" r="11" fill="#f97316" opacity="0.12"/>
+
+  <path d="M20 28c1.9-4.9 6.6-8 11.9-8h0.2c5.3 0 10 3.1 11.9 8l2.4 5.9c1.8 0.5 3.1 2.1 3.1 4v6.5c0 2.5-2 4.5-4.5 4.5H18.9c-2.5 0-4.5-2-4.5-4.5v-6.5c0-1.9 1.3-3.5 3.1-4L20 28Z" fill="url(#car)"/>
+  <path d="M24.7 27.5c2-2.4 4.9-3.8 8.1-3.8s6.1 1.4 8.1 3.8l1.6 4.4H23.1l1.6-4.4Z" fill="#07111d"/>
+  <rect x="31" y="33.4" width="2" height="8.2" rx="1" fill="#ecfeff" opacity="0.75"/>
+  <rect x="17.6" y="37.1" width="5.8" height="3.2" rx="1.6" fill="#f97316"/>
+  <rect x="40.6" y="37.1" width="5.8" height="3.2" rx="1.6" fill="#f97316"/>
+  <circle cx="22.5" cy="46.2" r="2.2" fill="#07111d" opacity="0.7"/>
+  <circle cx="42.5" cy="46.2" r="2.2" fill="#07111d" opacity="0.7"/>
+
+  <rect x="17" y="52" width="9" height="2.4" rx="1.2" fill="#22d3ee"/>
+  <rect x="27.5" y="52" width="9" height="2.4" rx="1.2" fill="#38bdf8"/>
+  <rect x="38" y="52" width="9" height="2.4" rx="1.2" fill="#f97316"/>
 </svg>
