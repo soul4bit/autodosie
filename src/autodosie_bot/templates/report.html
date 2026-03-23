@@ -11,21 +11,47 @@
 {% block content %}
 <section class="report-top">
   <div class="report-head hero-panel">
-    <p class="eyebrow">Отчет</p>
-    <h1>
-      {% if report %}
-      {{ report.query_label }} {{ report.query_value }}
-      {% else %}
-      Не удалось собрать отчет
-      {% endif %}
-    </h1>
-    <p class="hero-text">
-      {% if report %}
-      {{ report.summary }}
-      {% else %}
-      {{ error_message }}
-      {% endif %}
-    </p>
+    <div class="report-banner">
+      <div class="report-banner-copy">
+        <p class="eyebrow">Отчет</p>
+        <h1>
+          {% if report %}
+          {{ report.query_label }} {{ report.query_value }}
+          {% else %}
+          Не удалось собрать отчет
+          {% endif %}
+        </h1>
+        <p class="hero-text">
+          {% if report %}
+          {{ report.summary }}
+          {% else %}
+          {{ error_message }}
+          {% endif %}
+        </p>
+      </div>
+
+      <div class="report-visual">
+        <div class="report-visual-head">
+          <span class="signal-pill">
+            {% if report %}
+            {{ report.provider }}
+            {% else %}
+            {{ query_label }}
+            {% endif %}
+          </span>
+          <span class="signal-pill signal-pill-secondary">{{ query_type|upper }}</span>
+        </div>
+        <img
+          src="{{ request.url_for('static', path='/car-showcase.svg') }}"
+          alt=""
+          class="car-showcase-art report-car-art"
+        >
+        <div class="report-visual-tag">
+          <span>scan target</span>
+          <strong>{% if report %}{{ report.query_value }}{% else %}{{ submitted_query }}{% endif %}</strong>
+        </div>
+      </div>
+    </div>
   </div>
 
   <aside class="report-actions dashboard-panel">

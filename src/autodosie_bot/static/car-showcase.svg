@@ -1,0 +1,73 @@
+<svg width="760" height="420" viewBox="0 0 760 420" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="88" y1="70" x2="664" y2="356" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#112033"/>
+      <stop offset="1" stop-color="#081018"/>
+    </linearGradient>
+    <linearGradient id="body" x1="182" y1="156" x2="570" y2="305" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FFF2BE"/>
+      <stop offset="0.42" stop-color="#F6B94D"/>
+      <stop offset="1" stop-color="#FF6A1A"/>
+    </linearGradient>
+    <linearGradient id="glass" x1="261" y1="143" x2="471" y2="225" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#D0F7FF" stop-opacity="0.84"/>
+      <stop offset="1" stop-color="#69D2FF" stop-opacity="0.18"/>
+    </linearGradient>
+    <linearGradient id="road" x1="105" y1="307" x2="654" y2="307" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#0D1622"/>
+      <stop offset="1" stop-color="#16283B"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(380 240) rotate(90) scale(140 220)">
+      <stop stop-color="#FF9D2E" stop-opacity="0.35"/>
+      <stop offset="1" stop-color="#FF9D2E" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <rect x="20" y="20" width="720" height="380" rx="36" fill="url(#bg)"/>
+  <rect x="20" y="20" width="720" height="380" rx="36" stroke="rgba(245,168,77,0.18)"/>
+  <ellipse cx="380" cy="238" rx="228" ry="142" fill="url(#glow)"/>
+
+  <path d="M94 82H666" stroke="#294B68" stroke-opacity="0.45" stroke-width="2" stroke-linecap="round" stroke-dasharray="4 10"/>
+  <path d="M124 116H636" stroke="#294B68" stroke-opacity="0.34" stroke-width="2" stroke-linecap="round" stroke-dasharray="4 12"/>
+  <path d="M148 350H612" stroke="#294B68" stroke-opacity="0.34" stroke-width="2" stroke-linecap="round" stroke-dasharray="4 12"/>
+  <path d="M160 82V338" stroke="#213B54" stroke-opacity="0.35" stroke-width="2" stroke-dasharray="5 11"/>
+  <path d="M602 82V338" stroke="#213B54" stroke-opacity="0.35" stroke-width="2" stroke-dasharray="5 11"/>
+
+  <circle cx="595" cy="104" r="52" stroke="#2D5877" stroke-width="2"/>
+  <circle cx="595" cy="104" r="34" stroke="#F6B94D" stroke-opacity="0.55" stroke-width="2" stroke-dasharray="6 10"/>
+  <path d="M595 56V152" stroke="#2D5877" stroke-width="2"/>
+  <path d="M547 104H643" stroke="#2D5877" stroke-width="2"/>
+  <circle cx="595" cy="104" r="8" fill="#F6B94D"/>
+
+  <rect x="100" y="286" width="560" height="44" rx="22" fill="url(#road)"/>
+  <path d="M122 308H638" stroke="#213D57" stroke-width="4" stroke-linecap="round"/>
+  <path d="M230 308H316" stroke="#F6B94D" stroke-width="4" stroke-linecap="round" stroke-dasharray="18 16"/>
+  <path d="M444 308H530" stroke="#F6B94D" stroke-width="4" stroke-linecap="round" stroke-dasharray="18 16"/>
+
+  <path d="M165 255C173 237 192 220 221 210L279 188C307 178 330 153 347 132C355 121 369 115 383 115H449C470 115 490 124 503 141L534 181C542 191 556 198 571 200L594 203C611 205 624 219 624 236V254C624 263 617 270 608 270H585C580 238 554 214 521 214C488 214 462 238 457 270H304C299 238 273 214 240 214C207 214 181 238 176 270H156C146 270 138 262 138 252V246C138 236 149 229 159 228L170 227L165 255Z" fill="url(#body)"/>
+  <path d="M264 188L313 143C321 136 331 132 341 132H432C444 132 455 138 462 148L489 188H264Z" fill="url(#glass)"/>
+  <path d="M324 142L307 188" stroke="#FFF9E1" stroke-opacity="0.48" stroke-width="2"/>
+  <path d="M438 140L461 188" stroke="#FFF9E1" stroke-opacity="0.48" stroke-width="2"/>
+  <path d="M228 220L590 220" stroke="#78391F" stroke-opacity="0.32" stroke-width="4" stroke-linecap="round"/>
+  <path d="M160 250H628" stroke="#FFF4D8" stroke-opacity="0.14" stroke-width="2"/>
+
+  <circle cx="240" cy="270" r="43" fill="#111C28"/>
+  <circle cx="240" cy="270" r="24" fill="#F0F7FF" fill-opacity="0.18" stroke="#8BCBFF" stroke-opacity="0.35" stroke-width="3"/>
+  <circle cx="240" cy="270" r="8" fill="#F6B94D"/>
+  <circle cx="521" cy="270" r="43" fill="#111C28"/>
+  <circle cx="521" cy="270" r="24" fill="#F0F7FF" fill-opacity="0.18" stroke="#8BCBFF" stroke-opacity="0.35" stroke-width="3"/>
+  <circle cx="521" cy="270" r="8" fill="#F6B94D"/>
+
+  <path d="M138 248C166 250 184 245 194 233" stroke="#68D8FF" stroke-opacity="0.35" stroke-width="3" stroke-linecap="round"/>
+  <path d="M624 236C608 236 595 233 585 225" stroke="#68D8FF" stroke-opacity="0.35" stroke-width="3" stroke-linecap="round"/>
+
+  <rect x="94" y="92" width="148" height="58" rx="18" fill="#0D1824" stroke="#294B68" stroke-width="2"/>
+  <text x="116" y="116" fill="#F6B94D" font-size="12" font-family="Arial, sans-serif" letter-spacing="1.6">SCAN MODE</text>
+  <text x="116" y="136" fill="#E8F0F7" font-size="20" font-family="Arial, sans-serif">VIN / PLATE</text>
+
+  <rect x="520" y="300" width="120" height="36" rx="18" fill="#09111A" stroke="#294B68" stroke-width="2"/>
+  <text x="546" y="322" fill="#E8F0F7" font-size="15" font-family="Arial, sans-serif">GIBDD</text>
+
+  <rect x="122" y="300" width="160" height="36" rx="18" fill="#09111A" stroke="#294B68" stroke-width="2"/>
+  <text x="148" y="322" fill="#E8F0F7" font-size="15" font-family="Arial, sans-serif">NOMEROGRAM</text>
+</svg>

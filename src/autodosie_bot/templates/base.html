@@ -8,13 +8,15 @@
     <link rel="icon" type="image/svg+xml" href="{{ request.url_for('static', path='/favicon.svg') }}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@500;600;700;800&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Unbounded:wght@500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ request.url_for('static', path='/site.css') }}">
   </head>
   <body>
     <div class="page-backdrop" aria-hidden="true">
       <div class="grid-glow grid-glow-left"></div>
       <div class="grid-glow grid-glow-right"></div>
+      <div class="road-sweep"></div>
+      <div class="road-orbit"></div>
       <div class="noise-panel"></div>
     </div>
 
@@ -28,10 +30,17 @@
           </span>
         </a>
 
-        <nav class="site-nav">
-          <a href="/" class="{% if active_page == 'home' %}is-active{% endif %}">Проверка</a>
-          <a href="/sources" class="{% if active_page == 'sources' %}is-active{% endif %}">Что покажем</a>
-        </nav>
+        <div class="header-tools">
+          <nav class="site-nav">
+            <a href="/" class="{% if active_page == 'home' %}is-active{% endif %}">Проверка</a>
+            <a href="/sources" class="{% if active_page == 'sources' %}is-active{% endif %}">Что покажем</a>
+          </nav>
+          <div class="header-status">
+            <span>VIN</span>
+            <span>plate</span>
+            <span>GIBDD</span>
+          </div>
+        </div>
       </header>
 
       <main>
@@ -39,13 +48,20 @@
       </main>
 
       <footer class="site-footer">
-        <div>
+        <div class="footer-copy">
           <strong>{{ site_name }}</strong>
           <p>Единый отчет по автомобилю из бесплатных источников: VIN, госномер, фото, сводка и следующие шаги проверки.</p>
         </div>
-        <div class="footer-links">
-          <a href="/">Проверка</a>
-          <a href="/sources">Что покажем</a>
+        <div class="footer-meta">
+          <div class="footer-links">
+            <a href="/">Проверка</a>
+            <a href="/sources">Что покажем</a>
+          </div>
+          <div class="footer-badges">
+            <span>showroom</span>
+            <span>signals</span>
+            <span>routes</span>
+          </div>
         </div>
       </footer>
     </div>

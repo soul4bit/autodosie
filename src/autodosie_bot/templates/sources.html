@@ -3,18 +3,47 @@
 {% block title %}{{ site_name }} | Что покажем{% endblock %}
 
 {% block content %}
-<section class="sources-hero hero-panel">
-  <p class="eyebrow">Возможности</p>
-  <h1>Из каких бесплатных источников собирается AutoDosie.</h1>
-  <p class="hero-text">
-    Сервис не продает закрытые базы и не обещает магию. Он собирает единый отчет из бесплатных
-    источников, показывает найденное автоматически и отдельно выводит ручные шаги для полной проверки.
-  </p>
+<section class="sources-hero hero-panel hero-panel-wide">
+  <div class="hero-split">
+    <div class="hero-split-copy">
+      <p class="eyebrow">Возможности</p>
+      <h1>AutoDosie собирает проверку как выставочный стенд, а не как свалку ссылок.</h1>
+      <p class="hero-text">
+        Сервис не обещает волшебную закрытую базу. Он берет бесплатные источники, раскладывает их по сценарию
+        покупки автомобиля и показывает, где уже есть факты, а где нужен следующий официальный шаг.
+      </p>
+    </div>
+
+    <div class="hero-monitor">
+      <div class="hero-monitor-head">
+        <span class="signal-pill">source mix</span>
+        <span class="signal-pill signal-pill-secondary">showroom view</span>
+      </div>
+      <img
+        src="{{ request.url_for('static', path='/car-showcase.svg') }}"
+        alt=""
+        class="car-showcase-art monitor-art"
+      >
+      <div class="monitor-readout">
+        <article>
+          <span>VIN lane</span>
+          <strong>ГИБДД</strong>
+        </article>
+        <article>
+          <span>plate lane</span>
+          <strong>Nomerogram</strong>
+        </article>
+      </div>
+    </div>
+  </div>
 </section>
 
 <section class="source-page-grid">
   <article class="source-page-card">
-    <p class="card-index">01</p>
+    <div class="feature-card-head">
+      <p class="card-index">01</p>
+      <span class="feature-badge">Official</span>
+    </div>
     <h2>VIN: официальный ГИБДД</h2>
     <ul>
       <li>Сервис сразу ведет в официальный поток ГИБДД по VIN.</li>
@@ -24,22 +53,28 @@
   </article>
 
   <article class="source-page-card">
-    <p class="card-index">02</p>
+    <div class="feature-card-head">
+      <p class="card-index">02</p>
+      <span class="feature-badge">Public</span>
+    </div>
     <h2>Госномер: публичные следы</h2>
     <ul>
-      <li>Автоматический поиск карточки номера и фотографий через Номерограм.</li>
+      <li>Автоматический поиск карточки номера и фотографий через Nomerogram.</li>
       <li>Если номер уже публиковался, отчет покажет карточку, описание и найденные фото.</li>
       <li>Для ограничений, розыска и регистраций отчет переводит к проверке по VIN.</li>
     </ul>
   </article>
 
   <article class="source-page-card">
-    <p class="card-index">03</p>
-    <h2>Официальные ручные проверки</h2>
+    <div class="feature-card-head">
+      <p class="card-index">03</p>
+      <span class="feature-badge">Manual</span>
+    </div>
+    <h2>Следующий ход</h2>
     <ul>
-      <li>ГИБДД встроен в сервис отдельным шагом: вводишь капчу и получаешь историю регистрации, розыск, ограничения, техосмотр и ДТП.</li>
-      <li>НСИС для проверки ОСАГО.</li>
-      <li>ФНП для проверки залогов.</li>
+      <li>НСИС для проверки ОСАГО по VIN или госномеру.</li>
+      <li>ФНП для проверки залогов, когда машина уже идентифицирована.</li>
+      <li>Если VIN не найден, самый надежный путь все еще проходит через документы продавца.</li>
     </ul>
   </article>
 </section>
@@ -47,23 +82,23 @@
 <section class="methodology-strip">
   <div class="methodology-copy">
     <p class="eyebrow">Принцип</p>
-    <h2>Как устроен бесплатный отчет</h2>
+    <h2>Как этот дизайн работает на задачу проверки</h2>
   </div>
   <div class="methodology-grid">
     <article>
-      <span>Автоматически</span>
-      <strong>Собираем то, что можно получить сразу</strong>
-      <p>По госномеру AutoDosie сразу собирает публичные следы, а по VIN сразу запускает официальный сценарий ГИБДД.</p>
+      <span>Сцена</span>
+      <strong>Каждый экран похож на приборную панель</strong>
+      <p>Важные сигналы вынесены наверх, а детализация уходит ниже, чтобы взгляд не тонул в однотипных карточках.</p>
     </article>
     <article>
-      <span>Частично</span>
-      <strong>Не ломаем отчет из-за одного сбоя</strong>
-      <p>Если один бесплатный источник временно недоступен, отчет все равно вернется и пометит, какой блок не удалось получить.</p>
+      <span>Ритм</span>
+      <strong>Сначала маршрут, потом факты</strong>
+      <p>Интерфейс сначала объясняет, какой именно путь проверки сейчас идет, и только потом показывает найденные записи.</p>
     </article>
     <article>
-      <span>Вручную</span>
-      <strong>Отдельно показываем официальный следующий шаг</strong>
-      <p>Там, где нужен VIN, капча или ручная форма, сервис не скрывает это и дает прямой маршрут к нужной проверке.</p>
+      <span>Контекст</span>
+      <strong>Источники остаются честными</strong>
+      <p>Если источник требует капчу или ручной шаг, это явно показано как часть сценария, а не скрыто под обещанием “полного доступа”.</p>
     </article>
   </div>
 </section>
@@ -74,8 +109,8 @@
     <strong>Запустить поиск по автомобилю</strong>
   </div>
   <p class="side-note">
-    Главная точка сервиса одна: вводишь VIN или номер и получаешь понятный отчет из бесплатных источников
-    без лишней технической информации.
+    Главная точка сервиса одна: вводишь VIN или номер и попадаешь в тот маршрут, который действительно
+    имеет смысл для этого запроса.
   </p>
   <a class="ghost-link" href="/">Перейти к проверке</a>
 </section>

@@ -32,4 +32,4 @@ package-dir = {"" = "src"}
 where = ["src"]
 
 [tool.setuptools.package-data]
-autodosie_bot = ["static/*.css", "templates/*.html"]
+autodosie_bot = ["static/*.css", "static/*.svg", "templates/*.html"]
