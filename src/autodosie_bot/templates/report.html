@@ -62,12 +62,12 @@
 
 <section class="report-grid">
   {% for section in report.sections %}
-  <article class="report-card">
+  <article class="report-card{% if section.title == 'Сводка по ГИБДД' %} report-card-spotlight{% elif section.title in ('Розыск', 'Ограничения', 'Проблемы при проверке') %} report-card-alert{% endif %}">
     <div class="report-card-head">
       <p class="card-index">{{ "%02d"|format(loop.index) }}</p>
       <h2>{{ section.title }}</h2>
     </div>
-    <ul>
+    <ul class="{% if section.title == 'Сводка по ГИБДД' %}report-list-compact{% endif %}">
       {% for line in section.lines %}
       <li>{{ line }}</li>
       {% endfor %}

@@ -57,7 +57,7 @@ def load_config() -> AppConfig:
         log_level=os.getenv("LOG_LEVEL", "INFO").strip().upper(),
         vehicle_data_provider=os.getenv("VEHICLE_DATA_PROVIDER", "free").strip().lower() or "free",
         request_timeout_seconds=_get_float("REQUEST_TIMEOUT_SECONDS", 20.0),
-        gibdd_captcha_wait_seconds=_get_float("GIBDD_CAPTCHA_WAIT_SECONDS", 45.0),
+        gibdd_captcha_wait_seconds=_get_float("GIBDD_CAPTCHA_WAIT_SECONDS", 180.0),
         gibdd_captcha_poll_interval_seconds=_get_float("GIBDD_CAPTCHA_POLL_INTERVAL_SECONDS", 5.0),
         site_name=os.getenv("SITE_NAME", "AutoDosie").strip() or "AutoDosie",
         site_url=os.getenv("SITE_URL", "https://autodosie.ru").strip() or "https://autodosie.ru",

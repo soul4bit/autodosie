@@ -3,6 +3,13 @@
 {% block title %}{{ site_name }} | ГИБДД {{ query_value }}{% endblock %}
 
 {% block content %}
+{% if not captcha_image_data_url and captcha_refresh_url %}
+<script>
+  window.setTimeout(function () {
+    window.location.href = "{{ captcha_refresh_url }}";
+  }, {{ captcha_retry_after_seconds * 1000 }});
+</script>
+{% endif %}
 <section class="report-top">
   <div class="report-head hero-panel">
     <p class="eyebrow">ГИБДД</p>
@@ -60,7 +67,9 @@
     </form>
     {% else %}
     <p class="form-message">
-      Сейчас не удалось получить новую капчу от ГИБДД. Попробуй еще раз через несколько секунд.
+      Сейчас не удалось получить новую капчу от ГИБДД. Страница попробует запросить ее снова через
+      {{ captcha_retry_after_seconds }} секунд. Общее окно ожидания на стороне сервиса увеличено до
+      {{ gibdd_wait_window_seconds }} секунд.
     </p>
     <a class="ghost-link" href="/report/gibdd?q={{ query_value }}">Запросить новую капчу</a>
     {% endif %}

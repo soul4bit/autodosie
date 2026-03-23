@@ -521,6 +521,27 @@ h2 {
   gap: 0.72rem;
 }
 
+.report-card-spotlight {
+  grid-column: 1 / -1;
+  border-color: rgba(245, 168, 77, 0.32);
+  background:
+    radial-gradient(circle at top right, rgba(245, 168, 77, 0.18), transparent 16rem),
+    linear-gradient(180deg, rgba(24, 34, 46, 0.98) 0%, rgba(11, 18, 26, 0.98) 100%);
+}
+
+.report-card-alert {
+  border-color: rgba(255, 122, 24, 0.26);
+}
+
+.report-list-compact {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.9rem 1.4rem;
+}
+
+.report-list-compact li {
+  margin-top: 0;
+}
+
 .report-card-single {
   margin-top: 1.25rem;
 }
@@ -640,6 +661,10 @@ h2 {
   .hero-stats,
   .source-page-grid,
   .methodology-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .report-list-compact {
     grid-template-columns: 1fr;
   }
 

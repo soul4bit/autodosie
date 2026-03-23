@@ -486,6 +486,9 @@ def _gibdd_captcha_context(
     context["challenge_id"] = challenge_id
     context["captcha_image_data_url"] = captcha_image_data_url
     context["gibdd_directions"] = _GIBDD_DIRECTION_LABELS
+    context["captcha_refresh_url"] = f"/report/gibdd?q={query.value}"
+    context["captcha_retry_after_seconds"] = 60
+    context["gibdd_wait_window_seconds"] = int(config.gibdd_captcha_wait_seconds)
     return context
 
 

@@ -320,6 +320,9 @@ class GibddCheckService:
         summary_parts: list[str] = []
         error_lines: list[str] = []
 
+        overview_section = self._build_overview_section(results)
+        sections.append(overview_section)
+
         history = results["history"]
         history_payload = history.payload["RequestResult"] if history.payload else {}
         history_sections, history_summary = self._build_history_sections(history)
@@ -388,6 +391,16 @@ class GibddCheckService:
             summary=summary,
             sections=tuple(sections),
         )
+
+    def _build_overview_section(self, results: dict[str, _EndpointResult]) -> ReportSection:
+        lines = (
+            self._summarize_history_status(results["history"]),
+            self._summarize_wanted_status(results["wanted"]),
+            self._summarize_restrictions_status(results["restricted"]),
+            self._summarize_diagnostic_status(results["diagnostic"]),
+            self._summarize_accidents_status(results["aiusdtp"]),
+        )
+        return ReportSection(title="Сводка по ГИБДД", lines=lines)
 
     def _build_history_sections(self, result: _EndpointResult) -> tuple[list[ReportSection], str]:
         if result.kind == "empty":
@@ -583,6 +596,67 @@ class GibddCheckService:
             lines.append("ГИБДД вернуло блок ДТП без детализированных записей.")
 
         return [ReportSection(title="ДТП", lines=tuple(lines))], f"ДТП: {len(lines)} запись(ей)"
+
+    def _summarize_history_status(self, result: _EndpointResult) -> str:
+        if result.kind == "error":
+            return f"История регистрации: не удалось получить ({result.message})"
+        if result.kind == "empty" or not result.payload:
+            return "История регистрации: данных не найдено"
+
+        payload = result.payload["RequestResult"]
+        periods = self._as_list(payload.get("periods"))
+        vehicle_title = self._join_non_empty(payload.get("vehicle_brandmodel"), payload.get("vehicle_releaseyear"))
+        if vehicle_title and periods:
+            return f"История регистрации: {vehicle_title}, периодов владения: {len(periods)}"
+        if periods:
+            return f"История регистрации: найдено периодов владения: {len(periods)}"
+        if vehicle_title:
+            return f"История регистрации: найдена карточка ТС ({vehicle_title})"
+        return "История регистрации: сведения получены"
+
+    def _summarize_wanted_status(self, result: _EndpointResult) -> str:
+        if result.kind == "error":
+            return f"Розыск: не удалось получить ({result.message})"
+        if not result.payload:
+            return "Розыск: данных нет"
+
+        records = self._as_list(result.payload["RequestResult"].get("records"))
+        if not records:
+            return "Розыск: автомобиль не числится"
+        return f"Розыск: найдено записей: {len(records)}"
+
+    def _summarize_restrictions_status(self, result: _EndpointResult) -> str:
+        if result.kind == "error":
+            return f"Ограничения: не удалось получить ({result.message})"
+        if not result.payload:
+            return "Ограничения: данных нет"
+
+        records = self._as_list(result.payload["RequestResult"].get("records"))
+        if not records:
+            return "Ограничения: не найдены"
+        return f"Ограничения: найдено записей: {len(records)}"
+
+    def _summarize_diagnostic_status(self, result: _EndpointResult) -> str:
+        if result.kind == "error":
+            return f"Техосмотр: не удалось получить ({result.message})"
+        if not result.payload:
+            return "Техосмотр: данных нет"
+
+        cards = self._as_list(result.payload["RequestResult"].get("diagnosticCards"))
+        if not cards:
+            return "Техосмотр: диагностические карты не найдены"
+        return f"Техосмотр: найдено карт: {len(cards)}"
+
+    def _summarize_accidents_status(self, result: _EndpointResult) -> str:
+        if result.kind == "error":
+            return f"ДТП: не удалось получить ({result.message})"
+        if not result.payload:
+            return "ДТП: данных нет"
+
+        accidents = self._as_list(result.payload["RequestResult"].get("Accidents"))
+        if not accidents:
+            return "ДТП: записей не найдено"
+        return f"ДТП: найдено записей: {len(accidents)}"
 
     def _collect_lines(self, pairs: tuple[tuple[str, Any], ...]) -> list[str]:
         lines: list[str] = []
