@@ -9,9 +9,9 @@ from urllib.parse import quote
 import httpx
 
 from autodosie_bot.services.base import ReportSection, VehicleCheckError, VehicleCheckReport
+from autodosie_bot.services.nhtsa import NhtsaVehicleCheckService
 from autodosie_bot.validation import normalize_plate
 
-_NOMEROGRAM_BASE_URL = "https://www.nomerogram.ru"
 _NOMEROGRAM_REGION_URL = "https://www.nomerogram.ru/regions/{region}/{slug}/"
 _NOMEROGRAM_SEARCH_URL = "https://www.nomerogram.ru/"
 _NSIS_CHECK_URL = "https://nsis.ru/products/osago/check/"
@@ -21,21 +21,26 @@ _NOMEROGRAM_PAGE_RE = re.compile(r'href="(https://www\.nomerogram\.ru/n/{slug}-[
 _TITLE_RE = re.compile(r"<title>([^<]+)</title>", re.IGNORECASE)
 _META_RE_TEMPLATE = r"<meta\s+{attr_name}=['\"]{attr_value}['\"]\s+content=['\"]([^'\"]+)['\"]"
 _PHOTO_RE = re.compile(r"https://s\.nomerogram\.ru/photo/[^\s\"'>]+")
+_VIN_SOURCE_STATUS_LINES = (
+    "NHTSA vPIC: бесплатная базовая расшифровка VIN без истории владения и статусов по РФ.",
+    "ГИБДД: официальный бесплатный источник по ограничениям, розыску, ДТП и техосмотру, но с капчей.",
+    "НСИС: бесплатная проверка ОСАГО доступна через веб-форму.",
+    "ФНП: бесплатный реестр залогов доступен без простого публичного JSON API.",
+)
+_PLATE_SOURCE_STATUS_LINES = (
+    "Номерограм: помогает найти публичные карточки и фото по российскому номеру.",
+    "НСИС: позволяет проверить наличие действующего ОСАГО.",
+    "ГИБДД: для ограничений, розыска и регистраций по РФ понадобится VIN.",
+)
 _VIN_MANUAL_LINKS = (
-    f"Официальная страница ГИБДД: {_GIBDD_CHECK_URL}",
-    f"Проверка ОСАГО НСИС: {_NSIS_CHECK_URL}",
-    f"Реестр залогов ФНП: {_FNP_SEARCH_URL}",
+    f"ГИБДД: официальный отчет по VIN — {_GIBDD_CHECK_URL}",
+    f"НСИС: проверка ОСАГО — {_NSIS_CHECK_URL}",
+    f"ФНП: реестр залогов — {_FNP_SEARCH_URL}",
 )
 _PLATE_MANUAL_LINKS = (
-    f"Номерограм: {_NOMEROGRAM_SEARCH_URL}",
-    f"Проверка ОСАГО НСИС: {_NSIS_CHECK_URL}",
-    "Для полного официального отчета по ограничениям и розыску потребуется VIN.",
-)
-_VIN_STATUS_LINES = (
-    "ГИБДД: официальный источник по регистрациям, розыску, ограничениям, ДТП и техосмотру, но проверка требует капчу.",
-    "НСИС: проверка ОСАГО по ТС есть, но публичная форма защищена антибот-проверкой.",
-    "ФНП: реестр залогов доступен бесплатно, но без простого публичного JSON API.",
-    "Американские VIN-источники отключены: сервис ориентирован только на РФ.",
+    f"Номерограм: ручной поиск по номеру — {_NOMEROGRAM_SEARCH_URL}",
+    f"НСИС: проверка ОСАГО — {_NSIS_CHECK_URL}",
+    f"ГИБДД: полный отчет по VIN — {_GIBDD_CHECK_URL}",
 )
 _USER_AGENT = "autodosie-web/0.1"
 
@@ -65,6 +70,8 @@ class NomerogramLookupService:
                     region_url,
                     headers={"User-Agent": _USER_AGENT},
                 )
+                if region_response.status_code == 404:
+                    return None
                 region_response.raise_for_status()
                 exact_page_url = self._extract_exact_page_url(region_response.text, slug)
                 if not exact_page_url:
@@ -74,6 +81,8 @@ class NomerogramLookupService:
                     exact_page_url,
                     headers={"User-Agent": _USER_AGENT},
                 )
+                if detail_response.status_code == 404:
+                    return None
                 detail_response.raise_for_status()
         except httpx.TimeoutException as exc:
             raise VehicleCheckError("Номерограм отвечает слишком долго. Повтори запрос позже.") from exc
@@ -147,33 +156,37 @@ class NomerogramLookupService:
 
 class FreeVehicleCheckService:
     def __init__(self, timeout_seconds: float) -> None:
+        self._nhtsa = NhtsaVehicleCheckService(timeout_seconds=timeout_seconds)
         self._nomerogram = NomerogramLookupService(timeout_seconds=timeout_seconds)
 
     async def check_vin(self, vin: str) -> VehicleCheckReport:
-        sections = [
-            ReportSection(
-                title="РФ-режим проверки VIN",
-                lines=(
-                    "Сейчас сервис использует только российскую логику проверки.",
-                    "Автоматическая расшифровка через американские VIN-источники отключена.",
-                    "Для официальных российских данных используй ручные проверки по ссылкам ниже.",
-                ),
-            ),
-            ReportSection(
-                title="Статус источников РФ",
-                lines=_VIN_STATUS_LINES,
-            ),
-            ReportSection(
-                title="Бесплатные ручные проверки РФ",
-                lines=_VIN_MANUAL_LINKS,
-            ),
-        ]
+        sections: list[ReportSection] = []
 
-        summary = (
-            "Сервис работает только в РФ-режиме. "
-            "Американские VIN-источники отключены, а официальные российские бесплатные проверки "
-            "по VIN частично закрыты капчей или антибот-защитой."
-        )
+        try:
+            nhtsa_report = await self._nhtsa.check_vin(vin)
+        except VehicleCheckError as exc:
+            sections.append(
+                ReportSection(
+                    title="Автоматическая расшифровка VIN",
+                    lines=(
+                        f"NHTSA vPIC временно недоступен: {exc}",
+                        "Ниже остаются бесплатные российские проверки, которые можно открыть вручную.",
+                    ),
+                ),
+            )
+            summary = (
+                "Бесплатный отчет по VIN собран частично: автоматическая расшифровка VIN сейчас недоступна. "
+                "Для полной картины по РФ открой ГИБДД, НСИС и реестр залогов."
+            )
+        else:
+            sections.extend(self._drop_source_sections(nhtsa_report.sections))
+            summary = (
+                f"{nhtsa_report.summary} "
+                "Дополнительно отчет подсказывает бесплатные российские проверки по ограничениям, ОСАГО и залогам."
+            )
+
+        sections.append(ReportSection(title="Бесплатные источники РФ", lines=_VIN_SOURCE_STATUS_LINES))
+        sections.append(ReportSection(title="Что проверить вручную", lines=_VIN_MANUAL_LINKS))
 
         return VehicleCheckReport(
             query_type="vin",
@@ -186,48 +199,49 @@ class FreeVehicleCheckService:
 
     async def check_plate(self, plate: str) -> VehicleCheckReport:
         normalized_plate = normalize_plate(plate)
-        nomerogram_result = await self._nomerogram.lookup_plate(normalized_plate)
-
         sections: list[ReportSection] = []
-        summary = "Бесплатный отчет по госномеру собран из доступных открытых источников."
 
-        if nomerogram_result is None:
+        try:
+            nomerogram_result = await self._nomerogram.lookup_plate(normalized_plate)
+        except VehicleCheckError as exc:
+            nomerogram_result = None
             sections.append(
                 ReportSection(
-                    title="Номерограм",
+                    title="Публичные следы по номеру",
                     lines=(
-                        "Точная карточка номера в Номерограм не найдена.",
-                        f"Поиск вручную: {_NOMEROGRAM_SEARCH_URL}",
+                        f"Номерограм временно недоступен: {exc}",
+                        f"Ручной поиск: {_NOMEROGRAM_SEARCH_URL}",
                     ),
                 ),
             )
-            summary += " Публичные следы автомобиля по номеру не найдены, для полного отчета потребуется VIN."
+            summary = (
+                "Бесплатный отчет по госномеру собран частично: источник публичных следов сейчас недоступен. "
+                "Для официальных ограничений, розыска и регистраций дальше понадобится VIN."
+            )
         else:
-            nomerogram_lines: list[str] = []
-            if nomerogram_result.make_model:
-                nomerogram_lines.append(f"Опознание: {nomerogram_result.make_model}")
-            if nomerogram_result.title:
-                nomerogram_lines.append(f"Заголовок карточки: {nomerogram_result.title}")
-            if nomerogram_result.description:
-                nomerogram_lines.append(f"Описание: {nomerogram_result.description}")
-            nomerogram_lines.append(f"Карточка номера: {nomerogram_result.page_url}")
-            nomerogram_lines.append(f"Найдено фото: {len(nomerogram_result.image_urls)}")
-            nomerogram_lines.extend(
-                f"Фото {index + 1}: {url}"
-                for index, url in enumerate(nomerogram_result.image_urls[:3])
-            )
-            sections.append(ReportSection(title="Номерограм", lines=tuple(nomerogram_lines)))
-            summary += (
-                " Найдены публичные фото и карточка номера в Номерограм. "
-                "Для официальных ограничений, розыска и регистрации все еще нужен VIN."
-            )
+            if nomerogram_result is None:
+                sections.append(
+                    ReportSection(
+                        title="Публичные следы по номеру",
+                        lines=(
+                            "Точная карточка номера в Номерограм не найдена.",
+                            f"Ручной поиск: {_NOMEROGRAM_SEARCH_URL}",
+                        ),
+                    ),
+                )
+                summary = (
+                    "Бесплатный отчет по госномеру не нашел публичных следов автомобиля. "
+                    "Для официальных ограничений, розыска и регистраций дальше понадобится VIN."
+                )
+            else:
+                sections.append(self._build_nomerogram_section(nomerogram_result))
+                summary = (
+                    "Бесплатный отчет по госномеру собран из открытых источников. "
+                    "Найдены публичные следы автомобиля по номеру, а для официальной проверки следующий шаг — VIN."
+                )
 
-        sections.append(
-            ReportSection(
-                title="Бесплатные ручные проверки",
-                lines=_PLATE_MANUAL_LINKS,
-            ),
-        )
+        sections.append(ReportSection(title="Бесплатные источники", lines=_PLATE_SOURCE_STATUS_LINES))
+        sections.append(ReportSection(title="Что проверить вручную", lines=_PLATE_MANUAL_LINKS))
 
         return VehicleCheckReport(
             query_type="plate",
@@ -237,3 +251,22 @@ class FreeVehicleCheckService:
             summary=summary,
             sections=tuple(sections),
         )
+
+    def _build_nomerogram_section(self, result: NomerogramResult) -> ReportSection:
+        lines: list[str] = []
+        if result.make_model:
+            lines.append(f"Опознание: {result.make_model}")
+        if result.title:
+            lines.append(f"Заголовок карточки: {result.title}")
+        if result.description:
+            lines.append(f"Описание: {result.description}")
+        lines.append(f"Карточка номера: {result.page_url}")
+        lines.append(f"Найдено фото: {len(result.image_urls)}")
+        lines.extend(
+            f"Фото {index + 1}: {url}"
+            for index, url in enumerate(result.image_urls[:3])
+        )
+        return ReportSection(title="Публичные следы по номеру", lines=tuple(lines))
+
+    def _drop_source_sections(self, sections: tuple[ReportSection, ...]) -> list[ReportSection]:
+        return [section for section in sections if section.title != "Источник данных"]
