@@ -23,11 +23,24 @@
         <span class="case-pill">VIN -> GIBDD</span>
         <span class="case-pill case-pill-soft">plate -> public trace</span>
       </div>
+      <div class="showcase-hud" aria-hidden="true">
+        <span class="hud-label">garage mode</span>
+        <div class="hud-track">
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+      </div>
       <img
         src="{{ request.url_for('static', path='/car-showcase.svg') }}"
         alt=""
         class="showcase-art"
       >
+      <div class="garage-strip" aria-hidden="true">
+        <span>vin scan</span>
+        <span>roadline</span>
+        <span>trace</span>
+      </div>
       <div class="blueprint-notes">
         <article>
           <span>VIN</span>
