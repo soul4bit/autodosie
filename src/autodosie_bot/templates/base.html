@@ -31,8 +31,9 @@
 
         <div class="site-header-tools">
           <nav class="site-nav">
-            <a href="/" class="{% if active_page == 'home' %}is-active{% endif %}">Проверка</a>
-            <a href="/sources" class="{% if active_page == 'sources' %}is-active{% endif %}">Источники</a>
+            <a href="/#start" class="{% if active_page == 'home' %}is-active{% endif %}">Проверка</a>
+            <a href="/#data-sources">Откуда берем</a>
+            <a href="/#how-not-to">Как не надо</a>
           </nav>
           <div class="site-status">
             <span>VIN</span>
@@ -50,16 +51,17 @@
         <div class="footer-intro">
           <p class="footer-label">AutoDosie</p>
           <strong>{{ site_name }}</strong>
-          <p>Сервис собирает первичное досье по машине из бесплатных источников и подсказывает следующий шаг проверки.</p>
+          <p>Лендинг для быстрой проверки автомобиля: один ввод, один маршрут, один понятный следующий шаг.</p>
         </div>
         <div class="footer-links">
-          <a href="/">Проверка</a>
-          <a href="/sources">Источники</a>
+          <a href="/#start">Проверка</a>
+          <a href="/#data-sources">Откуда берем</a>
+          <a href="/#how-not-to">Как не надо</a>
           <a href="mailto:{{ support_email }}">{{ support_email }}</a>
         </div>
         <div class="footer-note">
-          <span>Открытые данные</span>
-          <span>Ручные шаги отмечены явно</span>
+          <span>Landing flow</span>
+          <span>Без лишних переходов</span>
         </div>
       </footer>
     </div>

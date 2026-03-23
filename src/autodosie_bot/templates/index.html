@@ -3,26 +3,41 @@
 {% block title %}{{ site_name }} | Проверка автомобиля{% endblock %}
 
 {% block content %}
-<section class="layout-split">
-  <div class="dossier-card hero-card">
+<section class="layout-split landing-hero" id="start">
+  <div class="dossier-card hero-card hero-card-home">
     <p class="section-tag">Проверка автомобиля</p>
-    <h1>Досье на машину до звонка продавцу.</h1>
+    <h1>Проверь машину по VIN до разговора с продавцом.</h1>
     <p class="lead">
-      Введи VIN или российский госномер и получи собранную картину: официальный маршрут, публичные следы
-      и следующий шаг, если данных пока мало.
+      AutoDosie собирает landing-flow вокруг одного действия: ты вводишь VIN или российский госномер,
+      а сервис показывает маршрут проверки, факты по машине и что делать дальше, если сигнала пока мало.
     </p>
 
     <div class="evidence-strip">
       <span>VIN: {{ example_vin }}</span>
       <span>Госномер: {{ example_plate }}</span>
-      <span>Один ввод -> один маршрут</span>
+      <span>Один ввод -> один маршрут -> одно досье</span>
+    </div>
+
+    <div class="vin-lane">
+      <div class="vin-code">
+        <span>XTA</span>
+        <span>210</span>
+        <span>740</span>
+        <span>Y12</span>
+        <span>34567</span>
+      </div>
+      <div class="vin-lane-copy">
+        <span>VIN focus</span>
+        <strong>17 символов дают доступ к официальной ветке и нормальной глубине проверки.</strong>
+        <p>Если VIN уже есть, не нужно блуждать по сайтам. Мы сразу ведем в сценарий, который имеет смысл для покупки машины.</p>
+      </div>
     </div>
 
     <div class="hero-fold">
       <div class="blueprint-card">
         <div class="blueprint-head">
-          <span class="case-pill">Снимок сервиса</span>
-          <span class="case-pill case-pill-soft">Маршрут проверки</span>
+          <span class="case-pill">VIN -> GIBDD</span>
+          <span class="case-pill case-pill-soft">plate -> public trace</span>
         </div>
         <img
           src="{{ request.url_for('static', path='/car-showcase.svg') }}"
@@ -38,26 +53,26 @@
           <article>
             <span>Быстрый контекст</span>
             <strong>Госномер сначала раскрывает публичные следы</strong>
-            <p>Фото и карточки помогают быстро понять, есть ли у машины цифровой след и за что зацепиться.</p>
+            <p>Фото, карточки и публикации помогают быстро понять, есть ли у машины цифровой след и за что зацепиться.</p>
           </article>
         </div>
       </div>
 
       <div class="mini-stack">
         <article class="mini-card">
-          <span>01</span>
-          <strong>Не обещаем закрытые базы</strong>
-          <p>Только понятная сборка из доступных и проверяемых источников.</p>
+          <span>VIN path</span>
+          <strong>Когда VIN найден, интерфейс перестает гадать и ведет в официальный контур.</strong>
+          <p>Это основной сценарий проверки, если хочешь принять решение по машине, а не просто посмотреть карточку.</p>
         </article>
         <article class="mini-card">
-          <span>02</span>
-          <strong>Показываем, где факт, а где следующий шаг</strong>
-          <p>Если данных мало, отчет прямо говорит, куда идти дальше.</p>
+          <span>Plate path</span>
+          <strong>Госномер нужен как быстрый старт, когда VIN еще не на руках.</strong>
+          <p>Он помогает быстро увидеть следы машины в публичном поле и понять, стоит ли идти глубже.</p>
         </article>
         <article class="mini-card">
-          <span>03</span>
-          <strong>Отчет читается как досье</strong>
-          <p>Сначала вывод и сигналы, ниже детализация и ручные проверки.</p>
+          <span>Next step</span>
+          <strong>Если данных мало, сервис не бросает тебя в пустоту.</strong>
+          <p>Отчет явно показывает, что проверять дальше: VIN, НСИС, ФНП или повторную официальную проверку.</p>
         </article>
       </div>
     </div>
@@ -66,18 +81,31 @@
   <aside class="dossier-card dossier-card-accent search-card">
     <div class="panel-heading">
       <p class="section-tag">Старт</p>
-      <h2>Начни с одного идентификатора</h2>
+      <h2>Один экран. Один ввод. Один маршрут.</h2>
+    </div>
+
+    <div class="search-side-visual" aria-hidden="true">
+      <img
+        src="{{ request.url_for('static', path='/car-showcase.svg') }}"
+        alt=""
+        class="showcase-art showcase-art-compact"
+      >
+      <div class="vehicle-tags">
+        <span>VIN scan</span>
+        <span>plate lookup</span>
+        <span>buyer flow</span>
+      </div>
     </div>
 
     <div class="search-highlights">
       <article>
         <span>VIN</span>
-        <strong>Официальная ветка</strong>
-        <p>Подготовим переход в ГИБДД и соберем единый отчет.</p>
+        <strong>Главная ветка проверки</strong>
+        <p>Подготовим переход в ГИБДД и соберем единый отчет без лишних шагов.</p>
       </article>
       <article>
         <span>Госномер</span>
-        <strong>Публичный след</strong>
+        <strong>Быстрый след по машине</strong>
         <p>Сначала ищем открытые карточки и фото, потом подсказываем следующий ход.</p>
       </article>
     </div>
@@ -113,13 +141,13 @@
   </aside>
 </section>
 
-<section class="section-shell">
+<section class="section-shell" id="how-it-works">
   <div class="section-heading">
     <div>
-      <p class="section-tag">Как устроено</p>
-      <h2>Три слоя проверки вместо свалки ссылок</h2>
+      <p class="section-tag">Как это работает</p>
+      <h2>Нормальный UX для проверки машины, а не меню из случайных ссылок</h2>
     </div>
-    <p>Интерфейс сначала определяет рабочий маршрут, потом собирает факты и в конце показывает, чего еще не хватает.</p>
+    <p>Лендинг устроен вокруг сценария покупателя: быстро понять контекст машины, не потерять основной маршрут и не застрять между источниками.</p>
   </div>
 
   <div class="board-grid">
@@ -130,13 +158,122 @@
     </article>
     <article class="board-card">
       <span class="board-index">02</span>
-      <h3>Сигналы</h3>
-      <p>Сводка, найденные фото, ограничения и проблемные зоны расположены так, чтобы решение по машине принималось быстрее.</p>
+      <h3>Сигналы сверху</h3>
+      <p>Сводка, фото, ограничения и проблемные зоны расположены так, чтобы решение по машине принималось быстрее.</p>
     </article>
     <article class="board-card">
       <span class="board-index">03</span>
       <h3>Следующий шаг</h3>
       <p>Если автоматический ответ неполный, отчет не обрывается: он подсказывает, что проверять вручную дальше.</p>
+    </article>
+  </div>
+</section>
+
+<section class="section-shell section-shell-featured" id="data-sources">
+  <div class="section-heading">
+    <div>
+      <p class="section-tag">Откуда берем</p>
+      <h2>Источники встроены прямо в лендинг, отдельная страница для этого не нужна</h2>
+    </div>
+    <p>Ниже не “партнерские логотипы”, а реальная логика сборки досье: что берем автоматически, что вытаскиваем как публичный след и что оставляем как честный ручной шаг.</p>
+  </div>
+
+  <div class="source-overview">
+    <div class="source-grid">
+      <article class="source-card">
+        <span class="board-index">01</span>
+        <h3>VIN: официальный поток ГИБДД</h3>
+        <ul>
+          <li>Сервис сразу ведет в официальный маршрут ГИБДД по VIN.</li>
+          <li>После капчи собираются история регистрации, розыск, ограничения, техосмотр и ДТП.</li>
+          <li>Результат возвращается единым читаемым отчетом внутри сайта.</li>
+        </ul>
+      </article>
+
+      <article class="source-card">
+        <span class="board-index">02</span>
+        <h3>Госномер: публичные следы</h3>
+        <ul>
+          <li>Автоматический поиск карточки номера и фотографий через Nomerogram.</li>
+          <li>Если номер уже публиковался, отчет показывает карточку, описание и найденные фото.</li>
+          <li>Для ограничений, розыска и регистраций сервис переводит к проверке по VIN.</li>
+        </ul>
+      </article>
+
+      <article class="source-card">
+        <span class="board-index">03</span>
+        <h3>Следующий ручной шаг</h3>
+        <ul>
+          <li>НСИС для проверки ОСАГО по VIN или госномеру.</li>
+          <li>ФНП для проверки залогов, когда машина уже идентифицирована.</li>
+          <li>Если VIN не найден, самый надежный путь все еще проходит через документы продавца.</li>
+        </ul>
+      </article>
+    </div>
+
+    <aside class="dossier-card source-aside">
+      <div class="panel-heading">
+        <p class="section-tag">VIN тема</p>
+        <h2>Почему мы так сильно держимся за VIN</h2>
+      </div>
+      <div class="vin-code vin-code-wide">
+        <span>XTA</span>
+        <span>210</span>
+        <span>740</span>
+        <span>Y12</span>
+        <span>34567</span>
+      </div>
+      <div class="timeline-list">
+        <article>
+          <span>17 символов</span>
+          <strong>VIN связывает машину с официальными проверками</strong>
+          <p>Именно он открывает самый полезный маршрут для проверки регистрации, розыска и ограничений.</p>
+        </article>
+        <article>
+          <span>До VIN</span>
+          <strong>Госномер нужен как разведка, а не как финальный ответ</strong>
+          <p>По номеру удобно найти следы, но не стоит делать вид, что этого достаточно для решения о покупке.</p>
+        </article>
+      </div>
+    </aside>
+  </div>
+</section>
+
+<section class="section-shell" id="how-not-to">
+  <div class="section-heading">
+    <div>
+      <p class="section-tag">Как не надо</p>
+      <h2>Три частые ошибки при проверке автомобиля</h2>
+    </div>
+    <p>Этот лендинг специально построен так, чтобы не толкать пользователя в типовые ошибки: ложное чувство полноты, хаос источников и слишком ранний вывод по машине.</p>
+  </div>
+
+  <div class="mistake-grid">
+    <article class="mistake-card">
+      <span class="mistake-label">Не надо</span>
+      <h3>Считать проверку по номеру финальной</h3>
+      <p>Госномер полезен для быстрого сигнала, но без VIN ты не получаешь нормальную глубину официальной проверки.</p>
+      <div class="mistake-tags">
+        <span>публичный след ≠ финальное решение</span>
+      </div>
+    </article>
+
+    <article class="mistake-card">
+      <span class="mistake-label">Не надо</span>
+      <h3>Прыгать между десятком ссылок</h3>
+      <p>Когда маршрут не собран, легко потерять контекст: где уже был факт, а где ты просто посмотрел красивую карточку.</p>
+      <div class="mistake-tags">
+        <span>один поток лучше пяти вкладок</span>
+      </div>
+    </article>
+
+    <article class="mistake-card">
+      <span class="mistake-label">Не надо</span>
+      <h3>Верить в “полный отчет без VIN и без ручных шагов”</h3>
+      <p>Если нужен VIN, капча или проверка через другой сервис, это надо показывать честно, а не скрывать под маркетингом.</p>
+      <div class="mistake-tags">
+        <span>честный UX лучше магических обещаний</span>
+      </div>
     </article>
   </div>
 </section>
@@ -167,12 +304,23 @@
   </div>
 
   <div class="dossier-card note-card">
-    <p class="section-tag">Для чего это</p>
-    <h2>Сервис помогает быстрее отсечь плохие варианты и не тратить первый созвон на очевидные вопросы.</h2>
+    <p class="section-tag">Итог</p>
+    <h2>Лендинг должен доводить до проверки, а не заставлять пользователя изучать структуру сайта.</h2>
     <p class="lead">
-      Вместо тяжёлого псевдо-детектива здесь редакционный формат: спокойная подача, честные источники и понятное место для ручной проверки.
+      Поэтому мы держим один основной сценарий: пользователь попадает на страницу, понимает разницу между VIN и номером, запускает проверку и сразу видит, что делать дальше.
     </p>
-    <a class="text-link" href="/sources">Посмотреть состав источников</a>
+    <a class="text-link" href="#start">Вернуться к форме поиска</a>
   </div>
+</section>
+
+<section class="dossier-card cta-card landing-cta">
+  <div class="panel-heading">
+    <p class="section-tag">Запуск проверки</p>
+    <h2>Вводишь VIN или номер и сразу идешь по нормальному маршруту.</h2>
+  </div>
+  <p class="lead">
+    Без лишних переходов между инфо-страницами. Основное действие одно: собрать досье по машине и быстро понять, стоит ли идти дальше.
+  </p>
+  <a class="primary-link" href="#start">Начать проверку</a>
 </section>
 {% endblock %}
