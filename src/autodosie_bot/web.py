@@ -148,6 +148,18 @@ def build_app() -> FastAPI:
                 ),
             )
 
+        if query.kind == "vin":
+            return await _start_gibdd_captcha_flow(
+                config=config,
+                request=request,
+                templates=templates,
+                gibdd_check_service=gibdd_check_service,
+                gibdd_challenges=gibdd_challenges,
+                query=query,
+                error_message="",
+                status_code=status.HTTP_200_OK,
+            )
+
         try:
             report = await _run_vehicle_report(vehicle_check_service, query)
         except VehicleCheckError as exc:
@@ -312,6 +324,19 @@ def build_app() -> FastAPI:
                     "ok": False,
                     "error": "invalid_query",
                     "message": "Expected a 17-character VIN or a Russian plate like A123BC77.",
+                },
+            )
+
+        if query.kind == "vin":
+            return JSONResponse(
+                status_code=status.HTTP_409_CONFLICT,
+                content={
+                    "ok": False,
+                    "error": "captcha_required",
+                    "message": "Official GIBDD VIN checks require captcha in the web flow.",
+                    "query_type": query.kind,
+                    "query_value": query.value,
+                    "next_url": f"/report/gibdd?q={query.value}",
                 },
             )
 

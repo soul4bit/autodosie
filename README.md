@@ -6,7 +6,7 @@
 
 - `FastAPI` website with:
   - landing page and search form
-  - report page for `VIN` or Russian plate
+  - report page: `VIN` opens the official `GIBDD` flow, Russian plate opens the public-source report
   - official `GIBDD` VIN flow with manual captcha entry and all main sections
   - JSON endpoint: `/api/check?q=...`
   - health endpoint: `/health`
@@ -133,6 +133,8 @@ sudo certbot --nginx -d autodosie.ru -d www.autodosie.ru
 - `/report/gibdd?q=XTA210740Y1234567`
 - `/api/check?q=XTA210740Y1234567`
 - `/health`
+
+`/api/check` is plate-first in the current product flow. For `VIN`, the API returns `captcha_required` and points to the web `GIBDD` route.
 
 ## Next steps
 

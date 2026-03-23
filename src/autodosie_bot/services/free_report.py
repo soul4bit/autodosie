@@ -42,6 +42,12 @@ _PLATE_MANUAL_LINKS = (
     f"НСИС: проверка ОСАГО — {_NSIS_CHECK_URL}",
     f"ГИБДД: полный отчет по VIN — {_GIBDD_CHECK_URL}",
 )
+_PLATE_VIN_HINT_LINES = (
+    "Надежного бесплатного автоматического способа получить VIN по госномеру без капчи и без серых баз сейчас нет.",
+    "Публичная карточка Номерограм обычно помогает найти фото, объявления и модель автомобиля, но не раскрывает VIN в открытом HTML.",
+    "Официальная проверка НСИС принимает госномер для проверки ОСАГО и может помочь вручную сверить автомобиль.",
+    "Если VIN нужен для полноценной проверки ГИБДД, практичный путь — запросить у продавца фото СТС, ПТС или таблички VIN.",
+)
 _USER_AGENT = "autodosie-web/0.1"
 
 
@@ -241,6 +247,7 @@ class FreeVehicleCheckService:
                 )
 
         sections.append(ReportSection(title="Бесплатные источники", lines=_PLATE_SOURCE_STATUS_LINES))
+        sections.append(ReportSection(title="Как попробовать найти VIN", lines=_PLATE_VIN_HINT_LINES))
         sections.append(ReportSection(title="Что проверить вручную", lines=_PLATE_MANUAL_LINKS))
 
         return VehicleCheckReport(
