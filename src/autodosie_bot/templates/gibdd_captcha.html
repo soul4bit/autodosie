@@ -10,53 +10,81 @@
   }, {{ captcha_retry_after_seconds * 1000 }});
 </script>
 {% endif %}
-<section class="report-top">
-  <div class="report-head hero-panel">
-    <div class="report-banner">
-      <div class="report-banner-copy">
-        <p class="eyebrow">ГИБДД</p>
-        <h1>Официальная проверка по VIN {{ query_value }}</h1>
-        <p class="hero-text">
-          ГИБДД требует капчу перед проверкой. После ввода символов сервис запросит все доступные направления:
-          историю регистрации, розыск, ограничения, техосмотр и ДТП.
-        </p>
-      </div>
+<section class="layout-split">
+  <div class="dossier-card hero-card">
+    <p class="section-tag">Официальная проверка</p>
+    <h1>ГИБДД по VIN {{ query_value }}</h1>
+    <p class="lead">
+      ГИБДД требует капчу перед запуском проверки. После ввода символов сервис запросит все доступные направления:
+      историю регистрации, розыск, ограничения, техосмотр и ДТП.
+    </p>
 
-      <div class="report-visual">
-        <div class="report-visual-head">
-          <span class="signal-pill">official lane</span>
-          <span class="signal-pill signal-pill-secondary">captcha step</span>
+    <div class="evidence-strip">
+      <span>Запрос: {{ query_value }}</span>
+      <span>Формат: VIN</span>
+      <span>Маршрут: ГИБДД -> отчет</span>
+    </div>
+
+    <div class="hero-fold">
+      <div class="blueprint-card">
+        <div class="blueprint-head">
+          <span class="case-pill">Официальный контур</span>
+          <span class="case-pill case-pill-soft">Капча -> сборка отчета</span>
         </div>
         <img
           src="{{ request.url_for('static', path='/car-showcase.svg') }}"
           alt=""
-          class="car-showcase-art report-car-art"
+          class="showcase-art"
         >
-        <div class="report-visual-tag">
-          <span>vin target</span>
+        <div class="report-target">
+          <span>VIN</span>
           <strong>{{ query_value }}</strong>
         </div>
+      </div>
+
+      <div class="mini-stack">
+        <article class="mini-card">
+          <span>Шаг 1</span>
+          <strong>Вводишь символы с картинки</strong>
+          <p>Капча нужна самому источнику ГИБДД, поэтому этот шаг нельзя автоматизировать полностью.</p>
+        </article>
+        <article class="mini-card">
+          <span>Шаг 2</span>
+          <strong>Сервис забирает все разделы</strong>
+          <p>После ввода капчи запросим каждый доступный блок и соберем их в один отчет.</p>
+        </article>
+        <article class="mini-card">
+          <span>Шаг 3</span>
+          <strong>Возвращаем структурированный результат</strong>
+          <p>Сводка и проблемные зоны будут разложены по отдельным карточкам без лишнего шума.</p>
+        </article>
       </div>
     </div>
   </div>
 
-  <aside class="report-actions dashboard-panel">
-    <div class="panel-header">
-      <span class="panel-kicker">Маршрут</span>
-      <strong>Как это работает</strong>
+  <aside class="dossier-card dossier-card-accent action-card">
+    <div class="panel-heading">
+      <p class="section-tag">Маршрут</p>
+      <h2>Как это работает</h2>
     </div>
-    <a class="ghost-link" href="/">Вернуться на старт</a>
-    <a class="ghost-link ghost-link-secondary" href="/report/gibdd?q={{ query_value }}">Обновить капчу</a>
-    <p class="side-note">
+    <div class="action-list">
+      <a class="primary-link" href="/">Вернуться на старт</a>
+      <a class="secondary-link" href="/report/gibdd?q={{ query_value }}">Обновить капчу</a>
+    </div>
+    <p class="form-message">
       Капча вводится вручную. После этого AutoDosie сам заберет ответы всех разделов ГИБДД и соберет единый отчет.
     </p>
+    <div class="helper-card">
+      <span>Важно</span>
+      <strong>Если картинка не загрузилась, страница автоматически попробует запросить новую.</strong>
+    </div>
   </aside>
 </section>
 
-<section class="captcha-layout">
-  <article class="captcha-panel">
-    <div class="report-card-head">
-      <p class="card-index">01</p>
+<section class="captcha-grid">
+  <article class="dossier-card">
+    <div class="panel-heading">
+      <p class="section-tag">Шаг 1</p>
       <h2>Введи символы с картинки</h2>
     </div>
 
@@ -91,20 +119,24 @@
       {{ captcha_retry_after_seconds }} секунд. Общее окно ожидания на стороне сервиса увеличено до
       {{ gibdd_wait_window_seconds }} секунд.
     </p>
-    <a class="ghost-link" href="/report/gibdd?q={{ query_value }}">Запросить новую капчу</a>
+    <a class="primary-link" href="/report/gibdd?q={{ query_value }}">Запросить новую капчу</a>
     {% endif %}
   </article>
 
-  <article class="report-card report-card-alert">
-    <div class="report-card-head">
-      <p class="card-index">02</p>
+  <article class="dossier-card">
+    <div class="panel-heading">
+      <p class="section-tag">Шаг 2</p>
       <h2>Что заберем из ГИБДД</h2>
     </div>
-    <ul>
+    <div class="timeline-list">
       {% for direction in gibdd_directions %}
-      <li>{{ direction }}</li>
+      <article>
+        <span>{{ "%02d"|format(loop.index) }}</span>
+        <strong>{{ direction }}</strong>
+        <p>Раздел будет добавлен в итоговое досье сразу после успешной проверки капчи.</p>
+      </article>
       {% endfor %}
-    </ul>
+    </div>
   </article>
 </section>
 {% endblock %}

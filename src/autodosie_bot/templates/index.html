@@ -3,82 +3,87 @@
 {% block title %}{{ site_name }} | Проверка автомобиля{% endblock %}
 
 {% block content %}
-<section class="hero hero-home">
-  <div class="hero-copy hero-panel">
-    <p class="eyebrow">autodosie.ru</p>
-    <h1>Смотри на машину как на сцену с уликами.</h1>
-    <p class="hero-text">
-      Введи VIN или российский госномер и получи отчет из бесплатных источников: для VIN сервис сразу
-      запускает официальный поток ГИБДД, а для номера ищет публичные следы автомобиля через Nomerogram.
+<section class="layout-split">
+  <div class="dossier-card hero-card">
+    <p class="section-tag">Проверка автомобиля</p>
+    <h1>Досье на машину до звонка продавцу.</h1>
+    <p class="lead">
+      Введи VIN или российский госномер и получи собранную картину: официальный маршрут, публичные следы
+      и следующий шаг, если данных пока мало.
     </p>
 
-    <div class="hero-points">
+    <div class="evidence-strip">
       <span>VIN: {{ example_vin }}</span>
       <span>Госномер: {{ example_plate }}</span>
-      <span>Один ввод, один маршрут проверки</span>
+      <span>Один ввод -> один маршрут</span>
     </div>
 
-    <div class="hero-dashboard">
-      <div class="hero-visual-card">
-        <div class="hero-visual-head">
-          <span class="signal-pill">VIN -> GIBDD</span>
-          <span class="signal-pill signal-pill-secondary">plate -> Nomerogram</span>
+    <div class="hero-fold">
+      <div class="blueprint-card">
+        <div class="blueprint-head">
+          <span class="case-pill">Снимок сервиса</span>
+          <span class="case-pill case-pill-soft">Маршрут проверки</span>
         </div>
         <img
           src="{{ request.url_for('static', path='/car-showcase.svg') }}"
           alt=""
-          class="car-showcase-art"
+          class="showcase-art"
         >
-        <div class="hero-callouts">
+        <div class="blueprint-notes">
           <article>
-            <span>Официальный маршрут</span>
-            <strong>Капча, затем полный отчет ГИБДД</strong>
-            <p>История регистрации, розыск, ограничения, техосмотр и ДТП в одном проходе.</p>
+            <span>Официальный ход</span>
+            <strong>VIN сразу уводит в поток ГИБДД</strong>
+            <p>Капча, затем история регистрации, розыск, ограничения, техосмотр и ДТП в одном отчете.</p>
           </article>
           <article>
-            <span>Публичные следы</span>
-            <strong>Фото, карточки, объявления</strong>
-            <p>По госномеру сразу видно, где машина уже светилась и насколько есть за что зацепиться.</p>
+            <span>Быстрый контекст</span>
+            <strong>Госномер сначала раскрывает публичные следы</strong>
+            <p>Фото и карточки помогают быстро понять, есть ли у машины цифровой след и за что зацепиться.</p>
           </article>
         </div>
       </div>
 
-      <div class="hero-stats">
-        <article>
-          <span>Запрос</span>
-          <strong>VIN или номер</strong>
+      <div class="mini-stack">
+        <article class="mini-card">
+          <span>01</span>
+          <strong>Не обещаем закрытые базы</strong>
+          <p>Только понятная сборка из доступных и проверяемых источников.</p>
         </article>
-        <article>
-          <span>Результат</span>
-          <strong>ГИБДД или Nomerogram</strong>
+        <article class="mini-card">
+          <span>02</span>
+          <strong>Показываем, где факт, а где следующий шаг</strong>
+          <p>Если данных мало, отчет прямо говорит, куда идти дальше.</p>
         </article>
-        <article>
-          <span>Фокус</span>
-          <strong>РФ-автомобили</strong>
+        <article class="mini-card">
+          <span>03</span>
+          <strong>Отчет читается как досье</strong>
+          <p>Сначала вывод и сигналы, ниже детализация и ручные проверки.</p>
         </article>
       </div>
     </div>
   </div>
 
-  <aside class="search-card dashboard-panel">
-    <div class="panel-header">
-      <span class="panel-kicker">Старт проверки</span>
-      <strong>Запусти сцену поиска</strong>
+  <aside class="dossier-card dossier-card-accent search-card">
+    <div class="panel-heading">
+      <p class="section-tag">Старт</p>
+      <h2>Начни с одного идентификатора</h2>
     </div>
 
-    <div class="search-console">
-      <article class="console-card">
-        <span>plate spotlight</span>
-        <strong>{{ example_plate }}</strong>
+    <div class="search-highlights">
+      <article>
+        <span>VIN</span>
+        <strong>Официальная ветка</strong>
+        <p>Подготовим переход в ГИБДД и соберем единый отчет.</p>
       </article>
-      <article class="console-card console-card-accent">
-        <span>official vin lane</span>
-        <strong>{{ example_vin }}</strong>
+      <article>
+        <span>Госномер</span>
+        <strong>Публичный след</strong>
+        <p>Сначала ищем открытые карточки и фото, потом подсказываем следующий ход.</p>
       </article>
     </div>
 
     <form action="/report" method="get" class="search-form">
-      <label for="q">VIN или госномер</label>
+      <label for="q">VIN или российский госномер</label>
       <input
         id="q"
         name="q"
@@ -89,20 +94,18 @@
         spellcheck="false"
         required
       >
-      <button type="submit">Собрать отчет</button>
+      <button type="submit">Собрать досье</button>
     </form>
 
     {% if error_message %}
     <p class="form-message is-error">{{ error_message }}</p>
     {% else %}
     <p class="form-message">
-      VIN сразу ведет в официальный поток ГИБДД с капчей. Госномер сначала проверяется по публичным
-      следам и карточкам в Nomerogram.
+      VIN ведет в официальный сценарий ГИБДД с капчей. Госномер сначала проверяется по публичным следам и карточкам.
     </p>
     {% endif %}
 
-    <div class="signal-bars" aria-hidden="true">
-      <span></span>
+    <div class="meter-bars" aria-hidden="true">
       <span></span>
       <span></span>
       <span></span>
@@ -110,72 +113,66 @@
   </aside>
 </section>
 
-<section class="feature-grid">
-  <article class="feature-card">
-    <div class="feature-card-head">
-      <p class="card-index">01</p>
-      <span class="feature-badge">Route</span>
+<section class="section-shell">
+  <div class="section-heading">
+    <div>
+      <p class="section-tag">Как устроено</p>
+      <h2>Три слоя проверки вместо свалки ссылок</h2>
     </div>
-    <h2>Не теряешься в переходах</h2>
-    <p>Сайт не размазывает проверку по десятку ссылок. Он сразу ведет в нужный поток: официальный или публичный.</p>
-  </article>
-  <article class="feature-card">
-    <div class="feature-card-head">
-      <p class="card-index">02</p>
-      <span class="feature-badge">Signals</span>
-    </div>
-    <h2>Сигналы видны сверху</h2>
-    <p>Сводка, риски и найденные следы собраны так, чтобы машина читалась как кейс, а не как набор случайных ответов.</p>
-  </article>
-  <article class="feature-card">
-    <div class="feature-card-head">
-      <p class="card-index">03</p>
-      <span class="feature-badge">Style</span>
-    </div>
-    <h2>Отчет выглядит как приборная панель</h2>
-    <p>Темные showroom-панели, telemetry-метки и дорожная графика делают интерфейс заметнее и живее.</p>
-  </article>
+    <p>Интерфейс сначала определяет рабочий маршрут, потом собирает факты и в конце показывает, чего еще не хватает.</p>
+  </div>
+
+  <div class="board-grid">
+    <article class="board-card board-card-primary">
+      <span class="board-index">01</span>
+      <h3>Маршрут</h3>
+      <p>VIN запускает официальный поток. Госномер начинает с быстрого публичного следа, если VIN пока неизвестен.</p>
+    </article>
+    <article class="board-card">
+      <span class="board-index">02</span>
+      <h3>Сигналы</h3>
+      <p>Сводка, найденные фото, ограничения и проблемные зоны расположены так, чтобы решение по машине принималось быстрее.</p>
+    </article>
+    <article class="board-card">
+      <span class="board-index">03</span>
+      <h3>Следующий шаг</h3>
+      <p>Если автоматический ответ неполный, отчет не обрывается: он подсказывает, что проверять вручную дальше.</p>
+    </article>
+  </div>
 </section>
 
-<section class="source-strip">
-  <div class="source-strip-copy">
-    <p class="eyebrow">Что внутри</p>
-    <h2>Как сайт ведет по маршруту проверки</h2>
-  </div>
-  <div class="source-strip-grid">
-    <article>
-      <span>VIN</span>
-      <strong>Официальный поток</strong>
-      <p>По VIN сервис сразу открывает встроенный сценарий ГИБДД и доводит его до итогового читаемого отчета.</p>
-    </article>
-    <article>
-      <span>Госномер</span>
-      <strong>Публичные следы</strong>
-      <p>По номеру сначала вытаскиваются карточки, фото и зацепки из открытых публикаций, чтобы быстро понять контекст машины.</p>
-    </article>
-    <article>
-      <span>Дальше</span>
-      <strong>Ручной следующий шаг</strong>
-      <p>Если автоматического сигнала мало, отчет подсказывает, куда идти дальше: НСИС, ФНП, запрос VIN у продавца.</p>
-    </article>
+<section class="process-shell">
+  <div class="dossier-card timeline-card">
+    <div class="panel-heading">
+      <p class="section-tag">Сценарий покупки</p>
+      <h2>Что происходит после ввода запроса</h2>
+    </div>
+    <div class="timeline-list">
+      <article>
+        <span>Шаг 1</span>
+        <strong>Определяем тип запроса</strong>
+        <p>VIN и госномер ведут в разные сценарии, поэтому сайт сразу разделяет маршруты.</p>
+      </article>
+      <article>
+        <span>Шаг 2</span>
+        <strong>Собираем факты в один экран</strong>
+        <p>Отчет укладывает найденные ответы по смыслу: сначала важное, потом детали.</p>
+      </article>
+      <article>
+        <span>Шаг 3</span>
+        <strong>Показываем следующую проверку</strong>
+        <p>Если нужен НСИС, ФНП или VIN от продавца, это явно отмечено внутри отчета.</p>
+      </article>
+    </div>
   </div>
 
-  <div class="route-band">
-    <article>
-      <span>01</span>
-      <strong>Вводишь VIN или номер</strong>
-      <p>Сайт сам определяет, какой поток нужен именно для этого запроса.</p>
-    </article>
-    <article>
-      <span>02</span>
-      <strong>Собираем сцену</strong>
-      <p>Официальные ответы и публичные следы укладываются в единый понятный интерфейс.</p>
-    </article>
-    <article>
-      <span>03</span>
-      <strong>Выделяем следующий ход</strong>
-      <p>Если история неполная, показываем точный следующий шаг, а не просто список ссылок.</p>
-    </article>
+  <div class="dossier-card note-card">
+    <p class="section-tag">Для чего это</p>
+    <h2>Сервис помогает быстрее отсечь плохие варианты и не тратить первый созвон на очевидные вопросы.</h2>
+    <p class="lead">
+      Вместо тяжёлого псевдо-детектива здесь редакционный формат: спокойная подача, честные источники и понятное место для ручной проверки.
+    </p>
+    <a class="text-link" href="/sources">Посмотреть состав источников</a>
   </div>
 </section>
 {% endblock %}

@@ -9,91 +9,137 @@
 {% endblock %}
 
 {% block content %}
-<section class="report-top">
-  <div class="report-head hero-panel">
-    <div class="report-banner">
-      <div class="report-banner-copy">
-        <p class="eyebrow">Отчет</p>
-        <h1>
-          {% if report %}
-          {{ report.query_label }} {{ report.query_value }}
-          {% else %}
-          Не удалось собрать отчет
-          {% endif %}
-        </h1>
-        <p class="hero-text">
-          {% if report %}
-          {{ report.summary }}
-          {% else %}
-          {{ error_message }}
-          {% endif %}
-        </p>
-      </div>
+<section class="layout-split">
+  <div class="dossier-card hero-card">
+    <p class="section-tag">Отчет</p>
+    <h1>
+      {% if report %}
+      {{ report.query_label }} {{ report.query_value }}
+      {% else %}
+      Не удалось собрать отчет
+      {% endif %}
+    </h1>
+    <p class="lead">
+      {% if report %}
+      {{ report.summary }}
+      {% else %}
+      {{ error_message }}
+      {% endif %}
+    </p>
 
-      <div class="report-visual">
-        <div class="report-visual-head">
-          <span class="signal-pill">
-            {% if report %}
-            {{ report.provider }}
-            {% else %}
-            {{ query_label }}
-            {% endif %}
-          </span>
-          <span class="signal-pill signal-pill-secondary">{{ query_type|upper }}</span>
+    <div class="evidence-strip">
+      <span>Источник: {% if report %}{{ report.provider }}{% else %}{{ query_label }}{% endif %}</span>
+      <span>Формат: {{ query_label }}</span>
+      <span>Запрос: {% if report %}{{ report.query_value }}{% else %}{{ submitted_query }}{% endif %}</span>
+    </div>
+
+    <div class="hero-fold">
+      <div class="blueprint-card">
+        <div class="blueprint-head">
+          <span class="case-pill">Цель проверки</span>
+          <span class="case-pill case-pill-soft">{{ query_label }}</span>
         </div>
         <img
           src="{{ request.url_for('static', path='/car-showcase.svg') }}"
           alt=""
-          class="car-showcase-art report-car-art"
+          class="showcase-art"
         >
-        <div class="report-visual-tag">
-          <span>scan target</span>
+        <div class="report-target">
+          <span>Запрос</span>
           <strong>{% if report %}{{ report.query_value }}{% else %}{{ submitted_query }}{% endif %}</strong>
         </div>
+      </div>
+
+      <div class="mini-stack">
+        {% if report %}
+        <article class="mini-card">
+          <span>Источник</span>
+          <strong>{{ report.provider }}</strong>
+          <p>Результат собран в один экран без прыжков между источниками.</p>
+        </article>
+        <article class="mini-card">
+          <span>Проверка</span>
+          <strong>{{ report.checked_at }}</strong>
+          <p>Время фиксирует момент получения ответа от источника.</p>
+        </article>
+        <article class="mini-card">
+          <span>Разделы</span>
+          <strong>{{ report.sections|length }}</strong>
+          <p>Ниже отчет разложен на блоки по смыслу, а не сплошным списком.</p>
+        </article>
+        {% else %}
+        <article class="mini-card">
+          <span>VIN</span>
+          <strong>17 символов</strong>
+          <p>Только латиница и цифры без пробелов и дополнительных знаков.</p>
+        </article>
+        <article class="mini-card">
+          <span>Госномер</span>
+          <strong>A123BC77 или A123BC777</strong>
+          <p>Российский формат с одной буквой, тремя цифрами и кодом региона.</p>
+        </article>
+        <article class="mini-card">
+          <span>Источник</span>
+          <strong>Может временно не ответить</strong>
+          <p>Если внешний сервис недоступен, повторный запрос позже обычно решает проблему.</p>
+        </article>
+        {% endif %}
       </div>
     </div>
   </div>
 
-  <aside class="report-actions dashboard-panel">
-    <div class="panel-header">
-      <span class="panel-kicker">Что дальше</span>
-      <strong>Следующий шаг проверки</strong>
+  <aside class="dossier-card dossier-card-accent action-card">
+    <div class="panel-heading">
+      <p class="section-tag">Что дальше</p>
+      <h2>Следующий шаг проверки</h2>
     </div>
-    <a class="ghost-link" href="/">Проверить другой автомобиль</a>
-    {% if gibdd_check_url %}
-    <a class="ghost-link ghost-link-secondary" href="{{ gibdd_check_url }}">{{ gibdd_action_label }}</a>
-    {% endif %}
-    <a class="ghost-link ghost-link-secondary" href="/sources">Посмотреть состав отчета</a>
-    <p class="side-note">
+    <div class="action-list">
+      <a class="primary-link" href="/">Проверить другой автомобиль</a>
+      {% if gibdd_check_url %}
+      <a class="secondary-link" href="{{ gibdd_check_url }}">{{ gibdd_action_label }}</a>
+      {% endif %}
+      <a class="secondary-link" href="/sources">Посмотреть источники</a>
+    </div>
+    <p class="form-message">
       Если результат выглядит коротким, это обычно означает, что часть источников требует отдельной ручной проверки.
     </p>
+    <div class="helper-card">
+      <span>Подсказка</span>
+      <strong>Сначала оцени сводку, затем смотри проблемные разделы и ручные шаги.</strong>
+    </div>
   </aside>
 </section>
 
 {% if report %}
-<section class="report-meta">
-  <article>
+<section class="metrics-row">
+  <article class="metric-card">
     <span>Источник</span>
     <strong>{{ report.provider }}</strong>
+    <p>Маркер того, откуда пришел основной ответ по текущему запросу.</p>
   </article>
-  <article>
+  <article class="metric-card">
     <span>Проверка</span>
     <strong>{{ report.checked_at }}</strong>
+    <p>Точка времени, в которую сервис собрал отчет и зафиксировал состояние ответа.</p>
   </article>
-  <article>
+  <article class="metric-card">
     <span>Формат</span>
     <strong>{{ report.query_label }}</strong>
+    <p>Тип идентификатора определяет маршрут и состав доступных блоков проверки.</p>
   </article>
 </section>
 
 <section class="report-grid">
   {% for section in report.sections %}
-  <article class="report-card{% if section.title == 'Сводка по ГИБДД' %} report-card-spotlight{% elif section.title in ('Розыск', 'Ограничения', 'Проблемы при проверке') %} report-card-alert{% endif %}">
-    <div class="report-card-head">
-      <p class="card-index">{{ "%02d"|format(loop.index) }}</p>
-      <h2>{{ section.title }}</h2>
+  <article class="report-section{% if section.title == 'Сводка по ГИБДД' %} report-section-featured{% elif section.title in ('Розыск', 'Ограничения', 'Проблемы при проверке') %} report-section-alert{% endif %}">
+    <div class="report-section-head">
+      <span class="board-index">{{ "%02d"|format(loop.index) }}</span>
+      <div>
+        <p class="section-tag">Блок отчета</p>
+        <h2>{{ section.title }}</h2>
+      </div>
     </div>
-    <ul class="{% if section.title == 'Сводка по ГИБДД' %}report-list-compact{% endif %}">
+    <ul class="report-lines{% if section.title == 'Сводка по ГИБДД' %} report-lines-columns{% endif %}">
       {% for line in section.lines %}
       <li>{{ line }}</li>
       {% endfor %}
@@ -102,16 +148,28 @@
   {% endfor %}
 </section>
 {% else %}
-<section class="report-card report-card-single">
-  <div class="report-card-head">
-    <p class="card-index">00</p>
-    <h2>Что проверить</h2>
+<section class="dossier-card">
+  <div class="panel-heading">
+    <p class="section-tag">Что проверить</p>
+    <h2>Перед повторным запросом</h2>
   </div>
-  <ul>
-    <li>VIN: 17 символов, только латиница и цифры.</li>
-    <li>Госномер: формат A123BC77 или A123BC777.</li>
-    <li>Если источник временно не ответил, просто повтори запрос позже.</li>
-  </ul>
+  <div class="timeline-list">
+    <article>
+      <span>Проверка 1</span>
+      <strong>VIN должен содержать 17 символов</strong>
+      <p>Используй только латиницу и цифры, без пробелов и визуально похожих русских букв.</p>
+    </article>
+    <article>
+      <span>Проверка 2</span>
+      <strong>Госномер должен быть в российском формате</strong>
+      <p>Подходят записи вида A123BC77 или A123BC777.</p>
+    </article>
+    <article>
+      <span>Проверка 3</span>
+      <strong>Если источник не ответил, попробуй позже</strong>
+      <p>Большая часть сбоев связана с доступностью внешнего сервиса, а не с самим запросом.</p>
+    </article>
+  </div>
 </section>
 {% endif %}
 {% endblock %}
