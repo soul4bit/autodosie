@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from typing import Any
 from dataclasses import dataclass
 from datetime import datetime
 from typing import Protocol
@@ -9,6 +10,7 @@ from typing import Protocol
 class ReportSection:
     title: str
     lines: tuple[str, ...]
+    meta: dict[str, Any] | None = None
 
 
 @dataclass(frozen=True, slots=True)

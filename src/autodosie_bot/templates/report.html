@@ -130,7 +130,7 @@
 
 <section class="report-grid">
   {% for section in report.sections %}
-  <article class="report-section{% if section.title == 'Сводка по ГИБДД' %} report-section-featured{% elif section.title in ('Розыск', 'Ограничения', 'Проблемы при проверке') %} report-section-alert{% endif %}">
+  <article class="report-section{% if section.title == 'Сводка по ГИБДД' %} report-section-featured{% elif section.title in ('Розыск', 'Ограничения') %} report-section-alert{% elif section.title == 'ДТП' and section.meta and section.meta.layout == 'accidents' %} report-section-accidents{% endif %}">
     <div class="report-section-head">
       <span class="board-index">{{ "%02d"|format(loop.index) }}</span>
       <div>
@@ -138,11 +138,78 @@
         <h2>{{ section.title }}</h2>
       </div>
     </div>
+
+    {% if section.title == 'ДТП' and section.meta and section.meta.layout == 'accidents' %}
+    <div class="accident-grid">
+      {% for record in section.meta.records %}
+      <article class="accident-card">
+        <div class="accident-card-head">
+          <div>
+            <p class="section-tag">ДТП {{ "%02d"|format(loop.index) }}</p>
+            <h3>{{ record.type or 'Запись о ДТП' }}</h3>
+          </div>
+          {% if record.date %}
+          <span class="accident-date">{{ record.date }}</span>
+          {% endif %}
+        </div>
+
+        <div class="accident-meta">
+          {% if record.place %}
+          <p><span>Место</span>{{ record.place }}</p>
+          {% endif %}
+          {% if record.region %}
+          <p><span>Регион</span>{{ record.region }}</p>
+          {% endif %}
+          {% if record.department %}
+          <p><span>Подразделение</span>{{ record.department }}</p>
+          {% endif %}
+          {% if record.number %}
+          <p><span>Номер</span>{{ record.number }}</p>
+          {% endif %}
+          {% if record.vehicle %}
+          <p><span>Авто</span>{{ record.vehicle }}</p>
+          {% endif %}
+          {% if record.participants %}
+          <p><span>Участников</span>{{ record.participants }}</p>
+          {% endif %}
+        </div>
+
+        <div class="accident-scheme">
+          <span class="damage-zone zone-front-left{% if 'front-left' in record.damage_zones %} is-active{% endif %}"></span>
+          <span class="damage-zone zone-front{% if 'front' in record.damage_zones %} is-active{% endif %}"></span>
+          <span class="damage-zone zone-front-right{% if 'front-right' in record.damage_zones %} is-active{% endif %}"></span>
+          <span class="damage-zone zone-left{% if 'left' in record.damage_zones %} is-active{% endif %}"></span>
+          <div class="scheme-car">
+            <span class="scheme-roof{% if 'roof' in record.damage_zones %} is-active{% endif %}"></span>
+            <span class="scheme-core{% if 'center' in record.damage_zones %} is-active{% endif %}"></span>
+          </div>
+          <span class="damage-zone zone-right{% if 'right' in record.damage_zones %} is-active{% endif %}"></span>
+          <span class="damage-zone zone-rear-left{% if 'rear-left' in record.damage_zones %} is-active{% endif %}"></span>
+          <span class="damage-zone zone-rear{% if 'rear' in record.damage_zones %} is-active{% endif %}"></span>
+          <span class="damage-zone zone-rear-right{% if 'rear-right' in record.damage_zones %} is-active{% endif %}"></span>
+        </div>
+
+        {% if record.damage_labels %}
+        <div class="accident-tags">
+          {% for label in record.damage_labels %}
+          <span>{{ label }}</span>
+          {% endfor %}
+        </div>
+        {% endif %}
+
+        {% if record.damage_text %}
+        <p class="accident-damage-text">{{ record.damage_text }}</p>
+        {% endif %}
+      </article>
+      {% endfor %}
+    </div>
+    {% else %}
     <ul class="report-lines{% if section.title == 'Сводка по ГИБДД' %} report-lines-columns{% endif %}">
       {% for line in section.lines %}
       <li>{{ line }}</li>
       {% endfor %}
     </ul>
+    {% endif %}
   </article>
   {% endfor %}
 </section>

@@ -776,10 +776,207 @@ h3 {
   gap: 0.8rem 1.2rem;
 }
 
+.report-section-accidents {
+  grid-column: 1 / -1;
+}
+
 .report-section-alert {
   background:
     linear-gradient(180deg, rgba(16, 11, 16, 0.88), rgba(12, 8, 14, 0.82)) padding-box,
     linear-gradient(135deg, rgba(251, 113, 133, 0.42), rgba(249, 115, 22, 0.3)) border-box;
+}
+
+.accident-grid,
+.accident-meta,
+.accident-tags {
+  display: grid;
+  gap: 0.9rem;
+}
+
+.accident-grid {
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  margin-top: 1rem;
+}
+
+.accident-card {
+  position: relative;
+  overflow: hidden;
+  padding: 1.1rem;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 22px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.03));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+.accident-card::before {
+  content: "";
+  position: absolute;
+  inset: auto -14% -38% auto;
+  width: 11rem;
+  height: 11rem;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(249, 115, 22, 0.14), transparent 70%);
+  pointer-events: none;
+}
+
+.accident-card-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 0.8rem;
+}
+
+.accident-card-head h3 {
+  margin-top: 0.4rem;
+  font-size: 1.05rem;
+}
+
+.accident-date {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2rem;
+  padding: 0.42rem 0.72rem;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--radius-pill);
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--text);
+  font-size: 0.76rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.accident-meta {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin-top: 1rem;
+}
+
+.accident-meta p {
+  margin: 0;
+  padding: 0.72rem 0.8rem;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--text-soft);
+  line-height: 1.52;
+}
+
+.accident-meta span {
+  display: block;
+  margin-bottom: 0.28rem;
+  color: var(--accent-cyan);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.accident-scheme {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.6rem;
+  align-items: center;
+  margin-top: 1rem;
+}
+
+.damage-zone,
+.scheme-car {
+  min-height: 4.1rem;
+  border-radius: 18px;
+}
+
+.damage-zone {
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.03);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03);
+}
+
+.zone-front-left,
+.zone-front,
+.zone-front-right,
+.zone-left,
+.zone-right,
+.zone-rear-left,
+.zone-rear,
+.zone-rear-right {
+  position: relative;
+}
+
+.damage-zone.is-active,
+.scheme-roof.is-active,
+.scheme-core.is-active {
+  border-color: rgba(249, 115, 22, 0.34);
+  background:
+    radial-gradient(circle at center, rgba(249, 115, 22, 0.34), rgba(249, 115, 22, 0.08) 58%, rgba(255, 255, 255, 0.04) 100%);
+  box-shadow: 0 0 0 4px rgba(249, 115, 22, 0.08);
+}
+
+.scheme-car {
+  position: relative;
+  display: grid;
+  place-items: center;
+  padding: 0.42rem;
+  border: 1px solid rgba(56, 189, 248, 0.18);
+  background:
+    linear-gradient(180deg, rgba(10, 20, 34, 0.94), rgba(6, 13, 25, 0.92));
+}
+
+.scheme-car::before {
+  content: "";
+  width: 62%;
+  height: 82%;
+  border-radius: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: linear-gradient(180deg, rgba(56, 189, 248, 0.14), rgba(37, 99, 235, 0.08));
+}
+
+.scheme-roof,
+.scheme-core {
+  position: absolute;
+  border: 1px solid transparent;
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.scheme-roof {
+  top: 20%;
+  left: 36%;
+  width: 28%;
+  height: 20%;
+  border-radius: 10px;
+}
+
+.scheme-core {
+  top: 36%;
+  left: 28%;
+  width: 44%;
+  height: 34%;
+  border-radius: 14px;
+}
+
+.accident-tags {
+  grid-template-columns: repeat(auto-fit, minmax(120px, max-content));
+  gap: 0.55rem;
+  margin-top: 1rem;
+}
+
+.accident-tags span {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2rem;
+  padding: 0.48rem 0.72rem;
+  border: 1px solid rgba(34, 211, 238, 0.14);
+  border-radius: var(--radius-pill);
+  background: rgba(34, 211, 238, 0.08);
+  color: #b8f5ff;
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+.accident-damage-text {
+  margin: 1rem 0 0;
+  color: var(--text);
+  line-height: 1.68;
 }
 
 .captcha-image-wrap {
@@ -919,6 +1116,10 @@ h3 {
 
   .blueprint-notes,
   .report-lines-columns {
+    grid-template-columns: 1fr;
+  }
+
+  .accident-meta {
     grid-template-columns: 1fr;
   }
 

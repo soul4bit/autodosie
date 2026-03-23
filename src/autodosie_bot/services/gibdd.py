@@ -3,6 +3,7 @@ from __future__ import annotations
 import asyncio
 import base64
 import logging
+import re
 import time
 from dataclasses import dataclass
 from datetime import datetime, timezone
@@ -56,6 +57,30 @@ _CHECK_LABELS = {
     "restricted": "ограничения",
     "diagnostic": "техосмотр",
     "aiusdtp": "ДТП",
+}
+_DAMAGE_ZONE_ORDER = (
+    "front-left",
+    "front",
+    "front-right",
+    "left",
+    "roof",
+    "right",
+    "rear-left",
+    "rear",
+    "rear-right",
+    "center",
+)
+_DAMAGE_ZONE_LABELS = {
+    "front-left": "спереди слева",
+    "front": "спереди",
+    "front-right": "спереди справа",
+    "left": "слева",
+    "roof": "сверху",
+    "right": "справа",
+    "rear-left": "сзади слева",
+    "rear": "сзади",
+    "rear-right": "сзади справа",
+    "center": "зона не уточнена",
 }
 logger = logging.getLogger(__name__)
 
@@ -327,7 +352,7 @@ class GibddCheckService:
     ) -> VehicleCheckReport:
         sections: list[ReportSection] = []
         summary_parts: list[str] = []
-        error_lines: list[str] = []
+        has_errors = any(result.kind == "error" for result in results.values())
 
         overview_section = self._build_overview_section(results)
         sections.append(overview_section)
@@ -359,13 +384,6 @@ class GibddCheckService:
         if accident_summary:
             summary_parts.append(accident_summary)
 
-        for name, result in results.items():
-            if result.kind == "error":
-                error_lines.append(f"{_CHECK_LABELS[name].capitalize()}: {result.message}")
-
-        if error_lines:
-            sections.append(ReportSection(title="Проблемы при проверке", lines=tuple(error_lines)))
-
         vehicle_title = self._join_non_empty(
             history_payload.get("vehicle_brandmodel"),
             history_payload.get("vehicle_releaseyear"),
@@ -381,7 +399,7 @@ class GibddCheckService:
         else:
             summary += " завершена."
 
-        if error_lines:
+        if has_errors:
             summary += " Часть разделов вернула ошибку."
 
         if not sections:
@@ -415,8 +433,20 @@ class GibddCheckService:
         if result.kind == "empty":
             return [ReportSection(title="История регистрации", lines=(result.message,))], "история регистрации: нет данных"
 
-        if result.kind == "error" or not result.payload:
-            return [], ""
+        if result.kind == "error":
+            return [
+                ReportSection(
+                    title="История регистрации",
+                    lines=(f"Не удалось получить историю регистрации: {result.message}",),
+                ),
+            ], ""
+        if not result.payload:
+            return [
+                ReportSection(
+                    title="История регистрации",
+                    lines=("ГИБДД не вернуло данные по истории регистрации.",),
+                ),
+            ], ""
 
         obj = result.payload["RequestResult"]
         main_lines = self._collect_lines(
@@ -463,8 +493,20 @@ class GibddCheckService:
         return sections, f"периодов владения: {len(period_lines)}"
 
     def _build_wanted_section(self, result: _EndpointResult) -> tuple[list[ReportSection], str]:
-        if result.kind == "error" or not result.payload:
-            return [], ""
+        if result.kind == "error":
+            return [
+                ReportSection(
+                    title="Розыск",
+                    lines=(f"Не удалось получить блок розыска: {result.message}",),
+                ),
+            ], ""
+        if not result.payload:
+            return [
+                ReportSection(
+                    title="Розыск",
+                    lines=("ГИБДД не вернуло данные по розыску.",),
+                ),
+            ], ""
 
         records = self._as_list(result.payload["RequestResult"].get("records"))
         if not records:
@@ -493,8 +535,20 @@ class GibddCheckService:
         return [ReportSection(title="Розыск", lines=tuple(lines))], f"розыск: {len(lines)} запись(ей)"
 
     def _build_restrictions_section(self, result: _EndpointResult) -> tuple[list[ReportSection], str]:
-        if result.kind == "error" or not result.payload:
-            return [], ""
+        if result.kind == "error":
+            return [
+                ReportSection(
+                    title="Ограничения",
+                    lines=(f"Не удалось получить блок ограничений: {result.message}",),
+                ),
+            ], ""
+        if not result.payload:
+            return [
+                ReportSection(
+                    title="Ограничения",
+                    lines=("ГИБДД не вернуло данные по ограничениям.",),
+                ),
+            ], ""
 
         records = self._as_list(result.payload["RequestResult"].get("records"))
         if not records:
@@ -530,8 +584,20 @@ class GibddCheckService:
         return [ReportSection(title="Ограничения", lines=tuple(lines))], f"ограничения: {len(lines)} запись(ей)"
 
     def _build_diagnostic_section(self, result: _EndpointResult) -> tuple[list[ReportSection], str]:
-        if result.kind == "error" or not result.payload:
-            return [], ""
+        if result.kind == "error":
+            return [
+                ReportSection(
+                    title="Техосмотр",
+                    lines=(f"Не удалось получить блок техосмотра: {result.message}",),
+                ),
+            ], ""
+        if not result.payload:
+            return [
+                ReportSection(
+                    title="Техосмотр",
+                    lines=("ГИБДД не вернуло данные по техосмотру.",),
+                ),
+            ], ""
 
         cards = self._as_list(result.payload["RequestResult"].get("diagnosticCards"))
         if not cards:
@@ -569,8 +635,20 @@ class GibddCheckService:
         return [ReportSection(title="Техосмотр", lines=tuple(lines))], f"техосмотр: {len(lines)} карта(ы)"
 
     def _build_accidents_section(self, result: _EndpointResult) -> tuple[list[ReportSection], str]:
-        if result.kind == "error" or not result.payload:
-            return [], ""
+        if result.kind == "error":
+            return [
+                ReportSection(
+                    title="ДТП",
+                    lines=(f"Не удалось получить блок ДТП: {result.message}",),
+                ),
+            ], ""
+        if not result.payload:
+            return [
+                ReportSection(
+                    title="ДТП",
+                    lines=("ГИБДД не вернуло данные по ДТП.",),
+                ),
+            ], ""
 
         accidents = self._as_list(result.payload["RequestResult"].get("Accidents"))
         if not accidents:
@@ -582,20 +660,19 @@ class GibddCheckService:
             ], "ДТП: нет"
 
         lines: list[str] = []
+        records: list[dict[str, Any]] = []
         for accident in accidents:
             if not isinstance(accident, dict):
                 continue
 
+            accident_record = self._build_accident_record(accident)
+            records.append(accident_record)
             description = self._join_non_empty(
-                self._label("Дата", accident.get("AccidentDateTime")),
-                self._label("№", accident.get("AccidentNumber")),
-                self._label("Тип", accident.get("AccidentType")),
-                self._label("Регион", accident.get("RegionName")),
-                self._label("Место", accident.get("AccidentPlace")),
-                self._label("Подразделение", accident.get("DepName")),
-                self._label("ТС", self._join_non_empty(accident.get("VehicleMark"), accident.get("VehicleModel"))),
-                self._label("Участников", accident.get("VehicleAmount")),
-                self._label("Повреждения", self._truncate(accident.get("DamageDestription"))),
+                self._label("Дата", accident_record["date"]),
+                self._label("№", accident_record["number"]),
+                self._label("Тип", accident_record["type"]),
+                self._label("Место", accident_record["place"]),
+                self._label("Повреждения", accident_record["damage_text"]),
                 separator="; ",
             )
             if description:
@@ -604,7 +681,34 @@ class GibddCheckService:
         if not lines:
             lines.append("ГИБДД вернуло блок ДТП без детализированных записей.")
 
-        return [ReportSection(title="ДТП", lines=tuple(lines))], f"ДТП: {len(lines)} запись(ей)"
+        return [
+            ReportSection(
+                title="ДТП",
+                lines=tuple(lines),
+                meta={
+                    "layout": "accidents",
+                    "records": tuple(records),
+                },
+            ),
+        ], f"ДТП: {len(lines)} запись(ей)"
+
+    def _build_accident_record(self, accident: dict[str, Any]) -> dict[str, Any]:
+        damage_text = self._truncate(accident.get("DamageDestription"))
+        damage_zones = self._extract_damage_zones(damage_text)
+        damage_labels = tuple(_DAMAGE_ZONE_LABELS[zone] for zone in damage_zones)
+        return {
+            "date": self._normalize_datetime(accident.get("AccidentDateTime")),
+            "number": self._clean_text(accident.get("AccidentNumber")),
+            "type": self._clean_text(accident.get("AccidentType")),
+            "region": self._clean_text(accident.get("RegionName")),
+            "place": self._clean_text(accident.get("AccidentPlace")),
+            "department": self._clean_text(accident.get("DepName")),
+            "vehicle": self._join_non_empty(accident.get("VehicleMark"), accident.get("VehicleModel")),
+            "participants": self._clean_text(accident.get("VehicleAmount")),
+            "damage_text": damage_text,
+            "damage_zones": damage_zones,
+            "damage_labels": damage_labels,
+        }
 
     def _summarize_history_status(self, result: _EndpointResult) -> str:
         if result.kind == "error":
@@ -695,6 +799,21 @@ class GibddCheckService:
             return f"{day}.{month}.{year}"
         return cleaned
 
+    def _normalize_datetime(self, value: Any) -> str:
+        cleaned = self._clean_text(value)
+        if not cleaned:
+            return ""
+        normalized = cleaned.replace("T", " ").replace("Z", "")
+        for fmt in ("%Y-%m-%d %H:%M:%S", "%Y-%m-%d %H:%M", "%Y-%m-%d"):
+            try:
+                parsed = datetime.strptime(normalized, fmt)
+            except ValueError:
+                continue
+            if "H" in fmt:
+                return parsed.strftime("%d.%m.%Y %H:%M")
+            return parsed.strftime("%d.%m.%Y")
+        return cleaned
+
     def _label(self, label: str, value: Any) -> str:
         cleaned = self._clean_text(value)
         if not cleaned:
@@ -710,6 +829,54 @@ class GibddCheckService:
         if len(cleaned) <= limit:
             return cleaned
         return cleaned[: limit - 1].rstrip() + "..."
+
+    def _extract_damage_zones(self, value: Any) -> tuple[str, ...]:
+        cleaned = self._clean_text(value).lower().replace("ё", "е")
+        if not cleaned:
+            return tuple()
+
+        zones: set[str] = set()
+        has_front = self._contains_any(cleaned, ("перед", "лобов", "капот", "решет", "фара", "бампер перед"))
+        has_rear = self._contains_any(cleaned, ("зад", "багаж", "фонар", "бампер зад"))
+        has_left = self._contains_any(cleaned, ("лев", "водител"))
+        has_right = self._contains_any(cleaned, ("прав", "пассажир"))
+        has_roof = self._contains_any(cleaned, ("крыш", "верх"))
+        has_front_left = self._contains_compound_zone(cleaned, "перед", "лев")
+        has_front_right = self._contains_compound_zone(cleaned, "перед", "прав")
+        has_rear_left = self._contains_compound_zone(cleaned, "зад", "лев")
+        has_rear_right = self._contains_compound_zone(cleaned, "зад", "прав")
+
+        if has_front_left:
+            zones.add("front-left")
+        if has_front_right:
+            zones.add("front-right")
+        if has_rear_left:
+            zones.add("rear-left")
+        if has_rear_right:
+            zones.add("rear-right")
+        if has_front and not (has_front_left or has_front_right):
+            zones.add("front")
+        if has_rear and not (has_rear_left or has_rear_right):
+            zones.add("rear")
+        if has_left and not (has_front_left or has_rear_left):
+            zones.add("left")
+        if has_right and not (has_front_right or has_rear_right):
+            zones.add("right")
+        if has_roof:
+            zones.add("roof")
+        if not zones:
+            zones.add("center")
+
+        return tuple(zone for zone in _DAMAGE_ZONE_ORDER if zone in zones)
+
+    def _contains_any(self, value: str, needles: tuple[str, ...]) -> bool:
+        return any(needle in value for needle in needles)
+
+    def _contains_compound_zone(self, value: str, primary: str, secondary: str) -> bool:
+        return bool(
+            re.search(rf"{primary}[а-я\s-]{{0,18}}{secondary}", value)
+            or re.search(rf"{secondary}[а-я\s-]{{0,18}}{primary}", value),
+        )
 
     def _clean_text(self, value: Any) -> str:
         if value is None:
