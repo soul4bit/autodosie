@@ -167,48 +167,12 @@ class GibddCheckService:
         try:
             async with self._build_client() as client:
                 client.cookies.update(cookies)
-                results = {
-                    "history": await self._run_endpoint(
-                        client=client,
-                        url=_GIBDD_REGISTER_URL,
-                        check_type="history",
-                        vin=vin,
-                        captcha_word=captcha_word,
-                        captcha_token=captcha_token,
-                    ),
-                    "wanted": await self._run_endpoint(
-                        client=client,
-                        url=_GIBDD_WANTED_URL,
-                        check_type="wanted",
-                        vin=vin,
-                        captcha_word=captcha_word,
-                        captcha_token=captcha_token,
-                    ),
-                    "restricted": await self._run_endpoint(
-                        client=client,
-                        url=_GIBDD_RESTRICT_URL,
-                        check_type="restricted",
-                        vin=vin,
-                        captcha_word=captcha_word,
-                        captcha_token=captcha_token,
-                    ),
-                    "diagnostic": await self._run_endpoint(
-                        client=client,
-                        url=_GIBDD_DIAGNOSTIC_URL,
-                        check_type="diagnostic",
-                        vin=vin,
-                        captcha_word=captcha_word,
-                        captcha_token=captcha_token,
-                    ),
-                    "aiusdtp": await self._run_endpoint(
-                        client=client,
-                        url=_GIBDD_DTP_URL,
-                        check_type="aiusdtp",
-                        vin=vin,
-                        captcha_word=captcha_word,
-                        captcha_token=captcha_token,
-                    ),
-                }
+                results = await self._run_all_endpoints(
+                    client=client,
+                    vin=vin,
+                    captcha_word=captcha_word,
+                    captcha_token=captcha_token,
+                )
         except httpx.TimeoutException as exc:
             raise VehicleCheckError("ГИБДД отвечает слишком долго. Повтори запрос позже.") from exc
         except httpx.HTTPError as exc:
@@ -219,6 +183,51 @@ class GibddCheckService:
             raise VehicleCheckError(first_error or "Не удалось выполнить проверку через ГИБДД.")
 
         return self._build_report(vin=vin, results=results)
+
+    async def _run_all_endpoints(
+        self,
+        *,
+        client: httpx.AsyncClient,
+        vin: str,
+        captcha_word: str,
+        captcha_token: str,
+    ) -> dict[str, _EndpointResult]:
+        endpoint_specs = (
+            ("history", _GIBDD_REGISTER_URL),
+            ("wanted", _GIBDD_WANTED_URL),
+            ("restricted", _GIBDD_RESTRICT_URL),
+            ("diagnostic", _GIBDD_DIAGNOSTIC_URL),
+            ("aiusdtp", _GIBDD_DTP_URL),
+        )
+        tasks = [
+            self._run_endpoint(
+                client=client,
+                url=url,
+                check_type=check_type,
+                vin=vin,
+                captcha_word=captcha_word,
+                captcha_token=captcha_token,
+            )
+            for check_type, url in endpoint_specs
+        ]
+        responses = await asyncio.gather(*tasks, return_exceptions=True)
+
+        results: dict[str, _EndpointResult] = {}
+        for (check_type, _url), response in zip(endpoint_specs, responses):
+            if isinstance(response, GibddCaptchaError):
+                raise response
+            if isinstance(response, httpx.TimeoutException):
+                raise response
+            if isinstance(response, httpx.HTTPError):
+                raise response
+            if isinstance(response, Exception):
+                label = _CHECK_LABELS.get(check_type, check_type)
+                raise VehicleCheckError(
+                    f"Не удалось обработать раздел ГИБДД: {label}.",
+                ) from response
+            results[check_type] = response
+
+        return results
 
     def _build_client(self) -> httpx.AsyncClient:
         return httpx.AsyncClient(

@@ -19,13 +19,18 @@ CYRILLIC_VIN_MAP = {
     "У": "Y",
     "Х": "X",
 }
+_IGNORED_QUERY_CHARACTERS = {"-", "_", "—", "–"}
+
+
+def _should_skip_query_char(char: str) -> bool:
+    return char.isspace() or char in _IGNORED_QUERY_CHARACTERS
 
 
 def normalize_vin(value: str) -> str:
     characters: list[str] = []
 
     for char in value.strip().upper():
-        if char in {" ", "-"}:
+        if _should_skip_query_char(char):
             continue
         characters.append(CYRILLIC_VIN_MAP.get(char, char))
 
@@ -40,7 +45,7 @@ def normalize_plate(value: str) -> str:
     characters: list[str] = []
 
     for char in value.strip().upper():
-        if char in {" ", "-"}:
+        if _should_skip_query_char(char):
             continue
         characters.append(CYRILLIC_VIN_MAP.get(char, char))
 
