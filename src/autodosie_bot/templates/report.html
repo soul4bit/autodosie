@@ -34,6 +34,9 @@
       <strong>Следующий шаг проверки</strong>
     </div>
     <a class="ghost-link" href="/">Проверить другой автомобиль</a>
+    {% if gibdd_check_url %}
+    <a class="ghost-link ghost-link-secondary" href="{{ gibdd_check_url }}">{{ gibdd_action_label }}</a>
+    {% endif %}
     <a class="ghost-link ghost-link-secondary" href="/sources">Посмотреть состав отчета</a>
     <p class="side-note">
       Если результат выглядит коротким, это обычно означает, что часть источников требует отдельной ручной проверки.

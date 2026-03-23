@@ -7,6 +7,7 @@
 - `FastAPI` website with:
   - landing page and search form
   - report page for `VIN` or Russian plate
+  - official `GIBDD` VIN flow with manual captcha entry and all main sections
   - JSON endpoint: `/api/check?q=...`
   - health endpoint: `/health`
 - current default provider: `free`
@@ -129,6 +130,7 @@ sudo certbot --nginx -d autodosie.ru -d www.autodosie.ru
 - `/` - landing and search form
 - `/report?q=XTA210740Y1234567`
 - `/report?q=A123BC77`
+- `/report/gibdd?q=XTA210740Y1234567`
 - `/api/check?q=XTA210740Y1234567`
 - `/health`
 

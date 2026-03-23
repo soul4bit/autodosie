@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+
+{% block title %}{{ site_name }} | ГИБДД {{ query_value }}{% endblock %}
+
+{% block content %}
+<section class="report-top">
+  <div class="report-head hero-panel">
+    <p class="eyebrow">ГИБДД</p>
+    <h1>Официальная проверка по VIN {{ query_value }}</h1>
+    <p class="hero-text">
+      ГИБДД требует капчу перед проверкой. После ввода символов сервис запросит все доступные направления:
+      историю регистрации, розыск, ограничения, техосмотр и ДТП.
+    </p>
+  </div>
+
+  <aside class="report-actions dashboard-panel">
+    <div class="panel-header">
+      <span class="panel-kicker">Маршрут</span>
+      <strong>Как это работает</strong>
+    </div>
+    <a class="ghost-link" href="/report?q={{ query_value }}">Вернуться к обычному отчету</a>
+    <a class="ghost-link ghost-link-secondary" href="/report/gibdd?q={{ query_value }}">Обновить капчу</a>
+    <p class="side-note">
+      Капча вводится вручную. После этого AutoDosie сам заберет ответы всех разделов ГИБДД и соберет единый отчет.
+    </p>
+  </aside>
+</section>
+
+<section class="captcha-layout">
+  <article class="captcha-panel">
+    <div class="report-card-head">
+      <p class="card-index">01</p>
+      <h2>Введи символы с картинки</h2>
+    </div>
+
+    {% if error_message %}
+    <p class="form-message is-error">{{ error_message }}</p>
+    {% endif %}
+
+    {% if captcha_image_data_url %}
+    <div class="captcha-image-wrap">
+      <img src="{{ captcha_image_data_url }}" alt="Капча ГИБДД" class="captcha-image">
+    </div>
+
+    <form action="/report/gibdd" method="post" class="search-form">
+      <input type="hidden" name="q" value="{{ query_value }}">
+      <input type="hidden" name="challenge_id" value="{{ challenge_id }}">
+      <label for="captcha_word">Символы с картинки</label>
+      <input
+        id="captcha_word"
+        name="captcha_word"
+        type="text"
+        inputmode="text"
+        autocomplete="one-time-code"
+        spellcheck="false"
+        placeholder="Например, 48219"
+        required
+      >
+      <button type="submit">Проверить по ГИБДД</button>
+    </form>
+    {% else %}
+    <p class="form-message">
+      Сейчас не удалось получить новую капчу от ГИБДД. Попробуй еще раз через несколько секунд.
+    </p>
+    <a class="ghost-link" href="/report/gibdd?q={{ query_value }}">Запросить новую капчу</a>
+    {% endif %}
+  </article>
+
+  <article class="report-card">
+    <div class="report-card-head">
+      <p class="card-index">02</p>
+      <h2>Что заберем из ГИБДД</h2>
+    </div>
+    <ul>
+      {% for direction in gibdd_directions %}
+      <li>{{ direction }}</li>
+      {% endfor %}
+    </ul>
+  </article>
+</section>
+{% endblock %}

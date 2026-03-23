@@ -465,6 +465,50 @@ h2 {
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
+.captcha-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.08fr) minmax(320px, 0.92fr);
+  gap: 1.2rem;
+  margin-top: 1.4rem;
+}
+
+.captcha-panel {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-xl);
+  background: linear-gradient(180deg, rgba(18, 28, 39, 0.94) 0%, rgba(10, 16, 24, 0.94) 100%);
+  box-shadow: var(--shadow);
+  padding: 1.7rem;
+}
+
+.captcha-panel::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(135deg, rgba(245, 168, 77, 0.12), transparent 40%);
+  pointer-events: none;
+}
+
+.captcha-image-wrap {
+  margin-top: 1rem;
+  padding: 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--radius-lg);
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.captcha-image {
+  display: block;
+  width: 100%;
+  max-width: 420px;
+  height: auto;
+  margin: 0 auto;
+  border-radius: var(--radius-md);
+  background: #fff;
+}
+
 .report-card-head {
   display: grid;
   gap: 0.55rem;
@@ -591,6 +635,7 @@ h2 {
   .feature-grid,
   .report-grid,
   .report-meta,
+  .captcha-layout,
   .source-strip-grid,
   .hero-stats,
   .source-page-grid,
